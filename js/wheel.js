@@ -60,7 +60,7 @@ const CategoryWheel = (() => {
     canvas.style.transition = `transform ${duracao}s cubic-bezier(0.32, 0.72, 0.14, 1)`;
     canvas.style.transform = `rotate(${finalAngle}deg)`;
 
-    if (window.GameAudio) GameAudio.spin();
+    GameAudio.spin();
 
     setTimeout(() => {
       angle = finalAngle % 360;

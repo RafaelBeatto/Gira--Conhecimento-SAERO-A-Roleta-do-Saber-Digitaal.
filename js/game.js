@@ -98,7 +98,7 @@ const SoloGame = (() => {
     if (!settings.vidasOn) candidatos = candidatos.filter(e => e.id !== "vida");
 
     eventoAtivo = candidatos[Math.floor(Math.random() * candidatos.length)];
-    if (window.GameAudio) GameAudio.special();
+    GameAudio.special();
     banner.textContent = `${eventoAtivo.emoji} ${eventoAtivo.nome}!`;
     banner.classList.add("show");
 
@@ -179,7 +179,7 @@ const SoloGame = (() => {
     timerInterval = setInterval(() => {
       tempoRestante--;
       updateTimerUI();
-      if (tempoRestante <= 5 && tempoRestante > 0 && window.GameAudio) GameAudio.timeWarning();
+      if (tempoRestante <= 5 && tempoRestante > 0) GameAudio.timeWarning();
       if (tempoRestante <= 0) {
         clearInterval(timerInterval);
         onTimeout();
@@ -248,10 +248,8 @@ const SoloGame = (() => {
       streakCorrect++;
       streakWrong = 0;
       acertos++;
-      if (window.GameAudio) {
-        GameAudio.correct();
-        if (combo >= 3) GameAudio.combo(combo);
-      }
+      GameAudio.correct();
+      if (combo >= 3) GameAudio.combo(combo);
       btnEl.classList.add("correct");
 
       let base = PONTOS_BASE[currentQuestion.dificuldade];
@@ -271,7 +269,7 @@ const SoloGame = (() => {
       streakWrong++;
       streakCorrect = 0;
       erros++;
-      if (window.GameAudio) GameAudio.wrong();
+      GameAudio.wrong();
       btnEl.classList.add("wrong");
       if (Storage.getSettings().animacoesOn) btnEl.classList.add("shake");
 
@@ -297,7 +295,7 @@ const SoloGame = (() => {
     };
     checkAchievements(ctx).forEach(a => {
       newAchievementsThisGame.push(a);
-      if (window.App) App.showAchievementToast(a);
+      App.showAchievementToast(a);
     });
 
     renderHUD();
@@ -308,7 +306,7 @@ const SoloGame = (() => {
   function onTimeout() {
     if (answered) return;
     answered = true;
-    if (window.GameAudio) GameAudio.timeout();
+    GameAudio.timeout();
 
     const settings = Storage.getSettings();
     combo = 0;
@@ -338,7 +336,7 @@ const SoloGame = (() => {
     };
     checkAchievements(ctx).forEach(a => {
       newAchievementsThisGame.push(a);
-      if (window.App) App.showAchievementToast(a);
+      App.showAchievementToast(a);
     });
 
     renderHUD();
@@ -374,7 +372,7 @@ const SoloGame = (() => {
 
   function onSpinClick() {
     if (CategoryWheel.isSpinning()) return;
-    if (window.GameAudio) GameAudio.unlock();
+    GameAudio.unlock();
 
     document.getElementById("solo-spin-btn").disabled = true;
     document.getElementById("solo-question-area").innerHTML = "";
@@ -434,11 +432,11 @@ const SoloGame = (() => {
     checkAchievements(ctxFinal).forEach(a => newAchievementsThisGame.push(a));
 
     const gameOver = Storage.getSettings().vidasOn && vidas <= 0;
-    if (window.GameAudio) gameOver ? GameAudio.gameOver() : GameAudio.victory();
+    if (gameOver) GameAudio.gameOver(); else GameAudio.victory();
 
     buildResultCard(gameOver);
-    if (window.App) App.showScreen("screen-solo-result");
-    if (window.App) App.refreshHomeMiniStats();
+    App.showScreen("screen-solo-result");
+    App.refreshHomeMiniStats();
   }
 
   // Listeners estáticos (os elementos existem desde o carregamento do HTML).

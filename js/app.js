@@ -57,7 +57,7 @@ const App = (() => {
     const toast = document.getElementById("achievement-toast");
     toast.textContent = `🏆 Conquista desbloqueada: ${a.emoji} ${a.nome}`;
     toast.classList.add("show");
-    if (window.GameAudio) GameAudio.achievement();
+    GameAudio.achievement();
     clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => toast.classList.remove("show"), 3200);
   }
@@ -70,13 +70,13 @@ const App = (() => {
     document.getElementById("cfg-cronometro").checked = !!s.cronometroOn;
     document.getElementById("cfg-vidas").checked = !!s.vidasOn;
     document.getElementById("cfg-animacoes").checked = !!s.animacoesOn;
-    if (window.GameAudio) GameAudio.setEnabled(!!s.somOn);
+    GameAudio.setEnabled(!!s.somOn);
   }
 
   function wireSettings() {
     document.getElementById("cfg-som").addEventListener("change", e => {
       Storage.saveSettings({ somOn: e.target.checked });
-      if (window.GameAudio) GameAudio.setEnabled(e.target.checked);
+      GameAudio.setEnabled(e.target.checked);
     });
     document.getElementById("cfg-tema").addEventListener("change", e => {
       Storage.saveSettings({ temaEscuro: e.target.checked });
