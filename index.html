@@ -27,8 +27,28 @@ h1 {
   font-size: 2.5rem;
 }
 
-canvas#wheel {
+.wheel-wrapper {
+  position: relative;
+  display: inline-block;
   margin-top: 20px;
+}
+
+#pointer {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  border-top: 28px solid #d35400;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.4));
+  z-index: 5;
+}
+
+canvas#wheel {
+  display: block;
   background: #fff;
   border-radius: 50%;
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
@@ -39,6 +59,21 @@ canvas#wheel {
 
 canvas#wheel:hover {
   box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+}
+
+#turn-indicator {
+  margin-top: 20px;
+  font-size: 22px;
+  font-weight: 800;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  user-select: none;
+}
+
+#progress {
+  margin-top: 6px;
+  font-size: 15px;
+  opacity: 0.9;
+  user-select: none;
 }
 
 #spin-btn, #next-btn {
@@ -127,6 +162,16 @@ canvas#wheel:hover {
   transform: none;
 }
 
+.option-btn.correct {
+  background: rgba(46, 204, 113, 0.9) !important;
+  color: #fff !important;
+}
+
+.option-btn.wrong {
+  background: rgba(231, 76, 60, 0.9) !important;
+  color: #fff !important;
+}
+
 #message {
   margin-top: 20px;
   font-size: 22px;
@@ -167,7 +212,7 @@ canvas#wheel:hover {
 
 /* Caixa individual para cada grupo */
 .scoreboard-group {
-  
+
   background: rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 15px 25px;
@@ -178,7 +223,21 @@ canvas#wheel:hover {
   color: #ffd700; /* dourado para o texto */
   text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
   user-select: none;
+  border: 2px solid transparent;
+  transition: transform 0.3s ease, border-color 0.3s ease;
 }
+
+.scoreboard-group.active-group {
+  border-color: #fff;
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+#scoreboard.bg-azul    { background: rgba(52, 152, 219, 0.35); }
+#scoreboard.bg-vermelho { background: rgba(231, 76, 60, 0.35); }
+#scoreboard.bg-verde   { background: rgba(46, 204, 113, 0.35); }
+#scoreboard.bg-amarelo { background: rgba(241, 196, 15, 0.35); }
+#scoreboard.bg-roxo    { background: rgba(155, 89, 182, 0.35); }
 
 
 
@@ -207,6 +266,16 @@ canvas#wheel:hover {
     font-size: 16px;
     max-width: 90vw;
   }
+
+  #turn-indicator {
+    font-size: 18px;
+  }
+
+  #pointer {
+    border-left-width: 12px;
+    border-right-width: 12px;
+    border-top-width: 20px;
+  }
 }
 
   </style>
@@ -214,15 +283,22 @@ canvas#wheel:hover {
 <body>
 <h1>Gira- Conhecimento SAERO: A Roleta do Saber Digital</h1> <!-- Título principal do jogo, aparece no topo da página -->
 
-<canvas id="wheel" width="350" height="350"></canvas><br> <!-- Área onde a roleta será desenhada com JS, tamanho 350x350px, <br> quebra a linha -->
- 
+<div id="turn-indicator"></div> <!-- Mostra de quem é a vez de jogar -->
+
+<div class="wheel-wrapper">
+  <div id="pointer"></div> <!-- Ponteiro fixo que indica a fatia sorteada -->
+  <canvas id="wheel" width="350" height="350"></canvas> <!-- Área onde a roleta será desenhada com JS, tamanho 350x350px -->
+</div>
+
+<div id="progress"></div> <!-- Mostra quantas perguntas já foram respondidas -->
+
 <button id="spin-btn">🎲 Girar a Roleta</button> <!-- Botão para girar a roleta, clicável pelo jogador -->
 
 <button id="next-btn">➡ Próxima Pergunta</button> <!-- Botão para passar a vez para o próximo grupo -->
 
-<div id="selected-question"></div> <!-- Espaço para mostrar a pergunta atual escolhida pela roleta -->
+<div id="selected-question" aria-live="polite"></div> <!-- Espaço para mostrar a pergunta atual escolhida pela roleta -->
 
-<div id="message"></div> <!-- Espaço para mostrar mensagens como “Acertou” ou “Errou” -->
+<div id="message" aria-live="polite"></div> <!-- Espaço para mostrar mensagens como “Acertou” ou “Errou” -->
 
 <div id="scoreboard"></div> <!-- Espaço para mostrar o placar de todos os grupos -->
 
@@ -969,6 +1045,10 @@ Estado de Minas, 25 de abril de 2005.
   }
 ];
 
+// Guarda uma cópia intacta das perguntas originais, usada para reiniciar o jogo
+const questionsBackup = questions.map(q => ({ ...q, opcoes: [...q.opcoes] }));
+const totalQuestions = questionsBackup.length;
+
 // funçao8
 //O que esse trecho faz?
 //Ele prepara todos os elementos do jogo na tela e cria algumas variáveis de controle que vão ser usadas para rodar a roleta, mostrar perguntas e controlar o fluxo do jogo.
@@ -980,6 +1060,8 @@ const nextBtn = document.getElementById("next-btn");        // Pega o botão par
 const selectedQuestionEl = document.getElementById("selected-question");  // Pega o elemento onde a pergunta será mostrada
 const messageEl = document.getElementById("message");       // Pega o elemento onde mensagens como "Acertou" ou "Errou" aparecerão
 const scoreboardEl = document.getElementById("scoreboard"); // Pega o elemento onde o placar do jogo será mostrado
+const turnIndicatorEl = document.getElementById("turn-indicator"); // Pega o elemento que mostra de quem é a vez
+const progressEl = document.getElementById("progress");     // Pega o elemento que mostra o progresso das perguntas
 
 
 // Criar botão para ver placar final (inicialmente escondido)
@@ -989,6 +1071,15 @@ finalScoreBtn.style.display = "none";                            // Inicialmente
 finalScoreBtn.style.marginTop = "10px";                          // Adiciona uma margem superior para separar visualmente
 finalScoreBtn.onclick = showFinalScoreboard;                     // Define que, ao clicar, chama a função para mostrar o placar final
 selectedQuestionEl.parentNode.appendChild(finalScoreBtn);       // Adiciona o botão na página, logo após a área de perguntas
+
+// Criar botão para reiniciar o jogo (inicialmente escondido)
+const restartBtn = document.createElement("button");             // Cria um botão novo dinamicamente
+restartBtn.textContent = "🔄 Jogar novamente";                    // Define o texto do botão
+restartBtn.id = "restart-btn";
+restartBtn.style.display = "none";                                // Inicialmente esconde o botão
+restartBtn.style.marginTop = "10px";                               // Adiciona uma margem superior
+restartBtn.onclick = restartGame;                                  // Define que, ao clicar, chama a função de reinício
+selectedQuestionEl.parentNode.appendChild(restartBtn);            // Adiciona o botão na página
 
 
 let angle = 0;                 // Guarda o ângulo atual da roleta (posição de giro)
@@ -1090,6 +1181,9 @@ function updateScoreboard() {
 groups.forEach(g => {  // Percorre todos os grupos da lista "groups"
   const groupDiv = document.createElement("div");  // Cria um elemento <div> para representar cada grupo
   groupDiv.className = "scoreboard-group";         // Adiciona a classe "scoreboard-group" para estilização
+  if (g === group) {                                // Se for o grupo da vez...
+    groupDiv.classList.add("active-group");         // ...destaca visualmente esse grupo no placar
+  }
 
   const nameEl = document.createElement("div");    // Cria um <div> para mostrar o nome do grupo
   nameEl.className = "group-name";                 // Define a classe "group-name"
@@ -1104,7 +1198,16 @@ groups.forEach(g => {  // Percorre todos os grupos da lista "groups"
 
   scoreboardEl.appendChild(groupDiv); // Adiciona a div do grupo dentro do placar principal
 });
-} // Resultado: o placar mostra todos os grupos com seus nomes e pontos atualizados
+
+  turnIndicatorEl.textContent = `🎯 Vez do: ${group.name}`; // Mostra de quem é a vez de jogar
+} // Resultado: o placar mostra todos os grupos com seus nomes e pontos atualizados, e destaca o grupo da vez
+
+
+// Atualiza o texto de progresso, mostrando quantas perguntas já foram respondidas
+function updateProgress() {
+  const answered = totalQuestions - questions.length;   // Calcula quantas perguntas já saíram da roleta
+  progressEl.textContent = `Pergunta ${Math.min(answered + 1, totalQuestions)} de ${totalQuestions} — ${questions.length} restante${questions.length !== 1 ? 's' : ''}`;
+}
 
 
 
@@ -1142,8 +1245,8 @@ function showQuestion(q) {
     const btn = document.createElement("button");   // Cria um botão para cada opção
     btn.className = "option-btn";                   // Define a classe "option-btn" para estilização
     btn.textContent = op;                           // Define o texto do botão como o texto da opção
-    btn.onclick = () => checkAnswer(op, q.resposta); // Quando o botão for clicado, chama a função checkAnswer
-                                                     // passando a opção escolhida e a resposta correta
+    btn.onclick = () => checkAnswer(op, q.resposta, btn); // Quando o botão for clicado, chama a função checkAnswer
+                                                     // passando a opção escolhida, a resposta correta e o próprio botão
     selectedQuestionEl.appendChild(btn);            // Adiciona o botão na tela, logo abaixo da pergunta
   });
 } // Resultado: mostra a pergunta e cria os botões para que o jogador escolha uma resposta
@@ -1171,40 +1274,49 @@ function showQuestion(q) {
 //O que essa função faz?
 //Ela é chamada quando alguém escolhe uma opção de resposta.
 //A função confere se a resposta está certa ou errada, dá os pontos e atualiza o placar.
-function checkAnswer(op, correct) {  
-  const currentGroup = groups[currentGroupIndex];   // Pega o grupo que está jogando no momento  
-  const selectedLetter = op.trim().charAt(0).toUpperCase(); // Pega a primeira letra da opção escolhida e deixa em maiúscula  
+function checkAnswer(op, correct, btnEl) {
+  const currentGroup = groups[currentGroupIndex];   // Pega o grupo que está jogando no momento
+  const selectedLetter = op.trim().charAt(0).toUpperCase(); // Pega a primeira letra da opção escolhida e deixa em maiúscula
+  const correctLetter = correct.trim().toUpperCase(); // Normaliza a letra correta para maiúscula
 
-  if (selectedLetter === correct.toUpperCase()) {   // Verifica se a letra escolhida é igual à resposta correta  
-    messageEl.textContent = "✅ Acertou! +1 ponto";  // Mostra mensagem de acerto na tela  
-    currentGroup.score++;                           // Adiciona +1 ponto ao grupo atual  
-  } else {  
-    messageEl.textContent = "❌ Errou! Resposta correta: " + correct; // Mostra mensagem de erro e a resposta certa  
-  }  
+  if (selectedLetter === correctLetter) {   // Verifica se a letra escolhida é igual à resposta correta
+    messageEl.textContent = "✅ Acertou! +1 ponto";  // Mostra mensagem de acerto na tela
+    currentGroup.score++;                           // Adiciona +1 ponto ao grupo atual
+  } else {
+    messageEl.textContent = "❌ Errou! Resposta correta: " + correct; // Mostra mensagem de erro e a resposta certa
+  }
 
-  updateScoreboard();   // Atualiza o placar depois da resposta  
+  updateScoreboard();   // Atualiza o placar depois da resposta
 
-  document.querySelectorAll(".option-btn").forEach(b => b.disabled = true);  
-  // Desativa todos os botões de opções, para não poder clicar de novo na mesma pergunta  
+  document.querySelectorAll(".option-btn").forEach(b => {
+    b.disabled = true;                               // Desativa todos os botões de opções, para não poder clicar de novo na mesma pergunta
+    const letter = b.textContent.trim().charAt(0).toUpperCase();
+    if (letter === correctLetter) {
+      b.classList.add("correct");                    // Destaca em verde a opção correta
+    } else if (b === btnEl) {
+      b.classList.add("wrong");                       // Destaca em vermelho a opção errada escolhida
+    }
+  });
 
-  // Remove a pergunta respondida do array para não repetir  
-  const indexToRemove = questions.indexOf(currentQuestion); // Acha a posição da pergunta atual no array  
-  if (indexToRemove > -1) {  
-    questions.splice(indexToRemove, 1);   // Remove a pergunta da lista  
-  }  
+  // Remove a pergunta respondida do array para não repetir
+  const indexToRemove = questions.indexOf(currentQuestion); // Acha a posição da pergunta atual no array
+  if (indexToRemove > -1) {
+    questions.splice(indexToRemove, 1);   // Remove a pergunta da lista
+  }
 
-  questionAnswered = true;   // Marca que a pergunta já foi respondida  
+  questionAnswered = true;   // Marca que a pergunta já foi respondida
+  updateProgress();          // Atualiza o texto de progresso
 
-  if (questions.length === 0) {    // Se não houver mais perguntas...  
-    spinBtn.disabled = true;       // Desativa o botão de girar  
-    nextBtn.style.display = "none"; // Esconde o botão de próxima pergunta  
-    finalScoreBtn.style.display = "inline-block"; // Mostra o botão para ver o placar final  
-  } else {  
-    nextBtn.style.display = "inline-block"; // Se ainda tem perguntas, mostra o botão de próxima pergunta  
-  }  
+  if (questions.length === 0) {    // Se não houver mais perguntas...
+    spinBtn.disabled = true;       // Desativa o botão de girar
+    nextBtn.style.display = "none"; // Esconde o botão de próxima pergunta
+    finalScoreBtn.style.display = "inline-block"; // Mostra o botão para ver o placar final
+  } else {
+    nextBtn.style.display = "inline-block"; // Se ainda tem perguntas, mostra o botão de próxima pergunta
+  }
 
-  spinBtn.disabled = true;   // Desativa o botão de girar até passar para a próxima rodada  
-}  
+  spinBtn.disabled = true;   // Desativa o botão de girar até passar para a próxima rodada
+}
 
 
 nextBtn.addEventListener("click", () => {                 // Quando o botão "Próxima Pergunta" for clicado, executa a função
@@ -1219,6 +1331,7 @@ nextBtn.addEventListener("click", () => {                 // Quando o botão "Pr
   spinBtn.disabled = false;           // Reativa o botão de girar a roleta
 
   drawWheel();                        // Redesenha a roleta com as perguntas restantes
+  updateScoreboard();                 // Atualiza o placar e o indicador de turno para o novo grupo
 });
 
 
@@ -1267,8 +1380,13 @@ spinBtn.addEventListener("click", () => {   // Quando o botão "Girar a Roleta" 
 
   setTimeout(() => {   // Depois de 3 segundos (tempo da animação) executa:
     angle = finalAngle % 360;  // Atualiza o ângulo para a posição final da roleta
-    const selectedIndex = Math.floor((numSegments - (angle / (360 / numSegments))) % numSegments);
-    // Calcula qual segmento (pergunta) caiu, baseado no ângulo final
+    const anglePerSegment = 360 / numSegments;
+    // O ponteiro fica fixo no topo (posição 270° no sistema de ângulos do canvas).
+    // Depois de girar o canvas "angle" graus no sentido horário, descobrimos qual
+    // fatia original ficou sob o ponteiro fazendo o caminho inverso.
+    const pointerAngle = ((270 - angle) % 360 + 360) % 360;
+    const selectedIndex = Math.floor(pointerAngle / anglePerSegment) % numSegments;
+    // Calcula qual segmento (pergunta) caiu sob o ponteiro, baseado no ângulo final
 
     currentQuestion = questions[selectedIndex];  // Define a pergunta sorteada como a atual
     showQuestion(currentQuestion);               // Mostra a pergunta e as opções na tela
@@ -1340,12 +1458,54 @@ function showFinalScoreboard() {
   // Esconde os botões de girar e avançar, já que o jogo terminou
   spinBtn.style.display = "none";
   nextBtn.style.display = "none";
+  progressEl.textContent = "";        // Limpa o texto de progresso
+  turnIndicatorEl.textContent = "";   // Limpa o indicador de turno
+
+  // Mostra o botão para jogar novamente
+  restartBtn.style.display = "inline-block";
+}
+
+
+// função 7
+// Reinicia o jogo do zero: zera os placares, restaura as perguntas originais
+// e devolve a roleta e os botões ao estado inicial.
+function restartGame() {
+  groups.forEach(g => g.score = 0);         // Zera a pontuação de todos os grupos
+  currentGroupIndex = 0;                    // Volta para o primeiro grupo
+  document.body.style.background = groups[currentGroupIndex].color; // Restaura a cor de fundo inicial
+
+  questions.length = 0;                     // Esvazia a lista de perguntas atual
+  questionsBackup.forEach(q => questions.push({ ...q, opcoes: [...q.opcoes] })); // Repõe todas as perguntas originais
+
+  canvas.style.transition = "none";         // Remove a animação temporariamente
+  canvas.style.transform = "rotate(0deg)";  // Reseta a rotação visual da roleta
+  void canvas.offsetWidth;                  // Força o navegador a aplicar o reset antes de reativar a transição
+  canvas.style.transition = "";             // Reativa a animação de giro
+
+  angle = 0;                                // Reseta o ângulo acumulado
+  spinning = false;                         // Garante que a roleta não está girando
+  currentQuestion = null;                   // Limpa a pergunta atual
+  questionAnswered = true;                  // Libera o botão de girar
+
+  selectedQuestionEl.innerHTML = "";        // Limpa a área de pergunta
+  messageEl.textContent = "";               // Limpa a mensagem de acerto/erro
+
+  spinBtn.style.display = "inline-block";   // Mostra novamente o botão de girar
+  spinBtn.disabled = false;                 // Reativa o botão de girar
+  nextBtn.style.display = "none";           // Esconde o botão de próxima pergunta
+  finalScoreBtn.style.display = "none";     // Esconde o botão de placar final
+  restartBtn.style.display = "none";        // Esconde o botão de reiniciar
+
+  drawWheel();          // Redesenha a roleta completa
+  updateScoreboard();    // Atualiza o placar e o indicador de turno
+  updateProgress();      // Atualiza o texto de progresso
 }
 
 
 // Inicialização
 drawWheel();
 updateScoreboard();
+updateProgress();
   </script>
 
 
