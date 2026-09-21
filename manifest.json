@@ -1,0 +1,32 @@
+{
+  "name": "Gira Conhecimento — A Roleta do Saber Digital",
+  "short_name": "Gira Conhecimento",
+  "description": "Roleta de conhecimento educativa: gire, descubra a categoria, responda e acumule pontos, combos e conquistas.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#2980b9",
+  "theme_color": "#2980b9",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
