@@ -864,28 +864,8 @@ function drawWheel() {
 // função 2
 //Essa função atualiza o placar do jogo na tela.
 //Ela mostra os grupos, muda a cor de fundo conforme o grupo da vez, e escreve quantos pontos cada grupo tem.
-function updateScoreboard() {  
-  scoreboardEl.className = 'default-bg';  // Define a classe do placar como "default-bg", limpando estilos anteriores
-
+function updateScoreboard() {
   const group = groups[currentGroupIndex];  // Pega o grupo que está na vez no momento
-  switch (group.name) {                     // Verifica qual é o grupo atual pelo nome
-    case "Grupo Azul":
-      scoreboardEl.classList.add('bg-azul');    // Se for o Grupo Azul → aplica a cor azul no placar
-      break;
-    case "Grupo Vermelho":
-      scoreboardEl.classList.add('bg-vermelho');// Se for o Grupo Vermelho → aplica a cor vermelha no placar
-      break;
-    case "Grupo Verde":
-      scoreboardEl.classList.add('bg-verde');   // Se for o Grupo Verde → aplica a cor verde no placar
-      break;
-    case "Grupo Amarelo":
-      scoreboardEl.classList.add('bg-amarelo'); // Se for o Grupo Amarelo → aplica a cor amarela no placar
-      break;
-    case "Grupo Roxo":
-      scoreboardEl.classList.add('bg-roxo');    // Se for o Grupo Roxo → aplica a cor roxa no placar
-      break;
-  } // Assim, o placar muda de cor de fundo conforme o grupo que está jogando
-
 
   scoreboardEl.innerHTML = "<h3>Placar</h3> ";  // Define o título "Placar" no placar, limpando o conteúdo anterior
 
@@ -898,7 +878,12 @@ groups.forEach(g => {  // Percorre todos os grupos da lista "groups"
 
   const nameEl = document.createElement("div");    // Cria um <div> para mostrar o nome do grupo
   nameEl.className = "group-name";                 // Define a classe "group-name"
-  nameEl.textContent = g.name;                     // Coloca o nome do grupo dentro da <div>
+
+  const dotEl = document.createElement("span");    // Bolinha colorida com a cor do grupo (identidade visual)
+  dotEl.className = "group-color-dot";
+  dotEl.style.backgroundColor = g.color;
+  nameEl.appendChild(dotEl);
+  nameEl.appendChild(document.createTextNode(g.name)); // Coloca o nome do grupo dentro da <div>
 
   const scoreEl = document.createElement("div");   // Cria um <div> para mostrar a pontuação do grupo
   scoreEl.className = "group-score";               // Define a classe "group-score"

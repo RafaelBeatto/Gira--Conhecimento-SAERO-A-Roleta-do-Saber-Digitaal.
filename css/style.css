@@ -1269,6 +1269,19 @@ canvas#wheel:hover {
   font-size: 13px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.group-color-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
 }
 
 .scoreboard-group .group-score {
@@ -1283,12 +1296,6 @@ canvas#wheel:hover {
   transform: scale(1.08);
   background: rgba(255, 255, 255, 0.28);
 }
-
-#scoreboard.bg-azul    { background: rgba(52, 152, 219, 0.35); }
-#scoreboard.bg-vermelho { background: rgba(231, 76, 60, 0.35); }
-#scoreboard.bg-verde   { background: rgba(46, 204, 113, 0.35); }
-#scoreboard.bg-amarelo { background: rgba(241, 196, 15, 0.35); }
-#scoreboard.bg-roxo    { background: rgba(155, 89, 182, 0.35); }
 
 /* ==========================================================================
    MOBILE FIRST
