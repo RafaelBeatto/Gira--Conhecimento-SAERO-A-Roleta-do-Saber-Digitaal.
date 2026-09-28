@@ -2,7 +2,7 @@
 // perguntas, a pontuação, as conquistas e as estatísticas continuem
 // funcionando mesmo sem internet depois do primeiro carregamento.
 
-const CACHE_NAME = "gira-conhecimento-v2-cache-v1";
+const CACHE_NAME = "gira-conhecimento-v2-cache-v2";
 
 const APP_SHELL = [
   "./",
@@ -51,25 +51,28 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
+// Estratégia "rede primeiro, cache como reserva": com internet, o jogador
+// sempre recebe a versão mais nova publicada (o cache é só uma cópia de
+// segurança, atualizada a cada visita online). Sem internet, cai pro que
+// já estiver salvo — é isso que mantém o jogo jogável offline.
 self.addEventListener("fetch", event => {
   const req = event.request;
   if (req.method !== "GET") return;
 
   event.respondWith(
-    caches.match(req).then(cached => {
-      if (cached) return cached;
-
-      return fetch(req)
-        .then(res => {
-          if (res && res.status === 200) {
-            const resClone = res.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(req, resClone));
-          }
-          return res;
-        })
-        .catch(() => {
+    fetch(req)
+      .then(res => {
+        if (res && res.status === 200) {
+          const resClone = res.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(req, resClone));
+        }
+        return res;
+      })
+      .catch(() =>
+        caches.match(req).then(cached => {
+          if (cached) return cached;
           if (req.mode === "navigate") return caches.match("./index.html");
-        });
-    })
+        })
+      )
   );
 });
