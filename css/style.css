@@ -1071,236 +1071,473 @@ canvas#wheel-v2 {
 }
 
 /* ==========================================================================
-   MODO TURMA (mesma lógica original — visual atualizado para a V2.0)
+   MODO TURMA — montar a turma → partida → pódio
    ========================================================================== */
+#screen-turma { --turn-color: #3498db; }
+#screen-turma [hidden] { display: none !important; }
+
+.turma-topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 6px 0;
+  min-height: 46px;
+}
+
+.turma-round {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.turma-topbar .topbar-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.turma-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.35s ease;
+}
+
 .turma-subtitle {
-  margin-top: -6px;
-  margin-bottom: 4px;
+  margin: -6px 0 16px;
   font-size: 1rem;
   color: var(--text-muted);
   font-weight: 600;
 }
 
-canvas#wheel {
-  margin-top: 0;
-  background: #fff;
+.turma-dot {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-  max-width: 90vw;
-  height: auto;
-  transition: box-shadow 0.3s ease;
+  background: var(--group-color, var(--turn-color));
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.55);
+  flex-shrink: 0;
 }
 
-canvas#wheel:hover {
-  box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+.turma-cta {
+  margin-top: 18px;
+  min-width: 220px;
+  max-width: 100%;
+  padding: 14px 30px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  box-shadow: 0 5px 15px var(--card-shadow);
+  transition: transform 0.15s ease, opacity 0.2s ease;
+  animation: spinBtnGlow 2.4s ease-in-out infinite;
+}
+.turma-cta:hover:not(:disabled) { transform: scale(1.04); }
+.turma-cta:disabled { opacity: 0.55; cursor: not-allowed; animation: none; transform: none; }
+.turma-cta.next { background: linear-gradient(135deg, #d35400, #e67e22); animation: none; margin-top: 12px; }
+
+/* ---- Etapa 1: montar a turma ---- */
+.turma-panel {
+  width: 100%;
+  max-width: 520px;
+  padding: 18px 18px 16px;
+  border-radius: 18px;
+  background: var(--card-bg);
+  box-shadow: 0 8px 22px var(--card-shadow);
+  text-align: left;
+}
+
+.turma-panel-title {
+  margin: 18px 0 8px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.turma-panel-title:first-child { margin-top: 0; }
+
+.turma-chips { display: flex; gap: 8px; }
+
+.turma-chip {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 6px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-color);
+  background: var(--card-bg);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+}
+.turma-chip small { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+.turma-chip:hover { background: var(--card-bg-strong); }
+.turma-chip.selected { background: var(--card-bg-strong); border-color: #fff; transform: translateY(-1px); }
+
+.turma-names { display: grid; gap: 8px; }
+
+.turma-name-row {
+  --group-color: #3498db;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  background: var(--card-bg);
+  border-left: 5px solid var(--group-color);
+  cursor: text;
+}
+.turma-name-row:focus-within { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.75); }
+
+.turma-name-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 0;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-color);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+.turma-name-row input::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+.turma-summary {
+  margin: 16px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* ---- Etapa 2: partida ---- */
+.turma-progress {
+  width: 100%;
+  max-width: 560px;
+  height: 8px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+}
+
+.turma-progress-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f39c12, #f1c40f);
+  transition: width 0.4s ease;
+}
+
+.turma-teams {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.turma-team {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1 1 96px;
+  max-width: 150px;
+  min-width: 0;
+  padding: 8px 8px 6px;
+  border-radius: 14px;
+  background: var(--card-bg);
+  border: 2px solid transparent;
+  border-top: 4px solid var(--group-color);
+  box-shadow: 0 3px 10px var(--card-shadow);
+  transition: transform 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.turma-team.active {
+  background: var(--card-bg-strong);
+  border-color: var(--group-color);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px var(--card-shadow), 0 0 14px var(--group-color);
+}
+
+.turma-team-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 800;
+  min-width: 0;
+}
+.turma-team-name .turma-dot { width: 9px; height: 9px; }
+
+.turma-team-label {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+
+.turma-team-score {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--accent);
+}
+.turma-team-score small { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+.turma-team-score.bump { animation: resultScorePop 0.5s ease; }
+
+.turma-turn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 16px;
+  scroll-margin-top: 12px;
+}
+
+.turma-turn-label {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.turma-turn-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 92vw;
+  padding: 7px 22px;
+  font-size: 24px;
+  font-weight: 900;
+  border-radius: 999px;
+  background: var(--card-bg);
+  border: 2px solid var(--turn-color);
+  box-shadow: 0 4px 14px var(--card-shadow);
+  transition: border-color 0.3s ease;
+}
+.turma-turn-name .turma-dot { width: 14px; height: 14px; background: var(--turn-color); }
+.turma-turn-name #turma-turn-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.turma-wheel-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .turma-wheel-wrapper {
   position: relative;
   display: inline-block;
-  margin-top: 10px;
+  margin-top: 14px;
 }
 
-#turma-pointer {
-  position: absolute;
-  top: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 18px solid transparent;
-  border-right: 18px solid transparent;
-  border-top: 28px solid #d35400;
-  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.4));
-  z-index: 5;
-}
-
-#turn-indicator {
-  margin-top: 6px;
-  display: inline-block;
-  padding: 8px 22px;
-  border-radius: 999px;
-  background: var(--card-bg);
-  border: 2px solid var(--turn-color, transparent);
-  font-size: 17px;
-  font-weight: 800;
-  box-shadow: 0 4px 12px var(--card-shadow);
-  user-select: none;
-  transition: border-color 0.3s ease;
-}
-#turn-indicator:empty { display: none; padding: 0; box-shadow: none; margin-top: 0; }
-
-#progress {
-  margin-top: 10px;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--text-muted);
-  user-select: none;
-}
-
-#spin-btn, #next-btn, #restart-btn, .turma-secondary-btn {
-  margin-top: 20px;
-  padding: 14px 32px;
-  font-size: 18px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 800;
-  color: #fff;
-  box-shadow: 0 5px 15px var(--card-shadow);
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
-  user-select: none;
-  min-width: 180px;
-}
-
-#spin-btn {
-  background: linear-gradient(135deg, #27ae60, #2ecc71);
-  animation: spinBtnGlow 2.4s ease-in-out infinite;
-}
-#spin-btn:hover:not(:disabled) { transform: scale(1.05); }
-#spin-btn:disabled { background: #95a5a6; cursor: not-allowed; box-shadow: none; transform: none; animation: none; }
-
-#next-btn { background: linear-gradient(135deg, #d35400, #e67e22); display: none; }
-#next-btn:hover { transform: scale(1.05); }
-
-#restart-btn, .turma-secondary-btn { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
-#restart-btn:hover, .turma-secondary-btn:hover { transform: scale(1.05); }
-
-#selected-question {
-  margin-top: 22px;
-  font-size: 17px;
-  background: var(--card-bg);
-  padding: 22px 24px;
-  border-radius: 16px;
-  max-width: 620px;
-  width: 100%;
-  box-shadow: 0 8px 20px var(--card-shadow);
-  white-space: pre-line;
-  line-height: 1.55;
-  text-align: left;
-  user-select: none;
-}
-#selected-question:empty { display: none; margin-top: 0; padding: 0; box-shadow: none; }
-
-.option-btn {
+#turma-wheel {
   display: block;
-  margin: 12px auto 0;
-  padding: 12px 18px;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  width: 100%;
-  max-width: 560px;
-  text-align: left;
-  background: rgba(255, 255, 255, 0.22);
-  color: #fff;
-  font-weight: 600;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-  transition: background-color 0.2s ease, transform 0.15s ease;
-  user-select: none;
+  width: 340px;
+  max-width: 86vw;
+  height: auto;
+  border-radius: 50%;
+  background: var(--wheel-bg);
+  box-shadow: 0 10px 26px var(--card-shadow);
 }
 
-.option-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.42);
-  transform: scale(1.015);
-}
+.turma-question { margin-top: 16px; }
 
-.option-btn:disabled {
-  background: rgba(255, 255, 255, 0.1);
-  cursor: not-allowed;
-  color: #ccc;
-  box-shadow: none;
-  transform: none;
-}
-
-.option-btn.correct { background: rgba(46, 204, 113, 0.9) !important; color: #fff !important; }
-.option-btn.wrong { background: rgba(231, 76, 60, 0.9) !important; color: #fff !important; }
-
-#message {
-  margin-top: 16px;
-  display: inline-block;
-  padding: 10px 22px;
-  border-radius: 12px;
+.turma-answering {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
   background: var(--card-bg-strong);
-  font-size: 18px;
-  font-weight: 800;
-  box-shadow: 0 4px 12px var(--card-shadow);
-  user-select: none;
+  color: var(--text-color);
+  font-size: 12.5px;
+  max-width: 60%;
 }
-#message:empty { display: none; padding: 0; box-shadow: none; margin-top: 0; }
+.turma-answering span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.turma-answering .turma-dot { width: 9px; height: 9px; }
 
-#scoreboard {
-  margin-top: 28px;
-  padding: 20px 26px;
-  background: var(--card-bg);
-  border-radius: 18px;
-  font-size: 18px;
-  max-width: 700px;
-  width: 100%;
-  color: #fff;
-  box-shadow: 0 8px 25px var(--card-shadow);
-  user-select: none;
-  text-align: center;
-  font-weight: 600;
-  line-height: 1.6;
-  transition: background-color 0.3s ease;
+.alt-btn.turma-alt {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 14px;
-}
-
-#scoreboard h3 {
+  align-items: flex-start;
+  gap: 10px;
   width: 100%;
-  margin: 0 0 6px;
-  font-size: 1.5rem;
-  text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
 }
 
-.scoreboard-group {
-  background: rgba(255, 255, 255, 0.14);
-  border-radius: 14px;
-  padding: 14px 20px;
-  min-width: 120px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-  flex: 1 1 120px;
-  max-width: 150px;
-  user-select: none;
-  border: 2px solid transparent;
-  transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
-}
-
-.scoreboard-group .group-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.85);
+.turma-alt-letter {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-}
-
-.group-color-dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
-  flex-shrink: 0;
-}
-
-.scoreboard-group .group-score {
-  font-size: 1.5rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.25);
   font-weight: 900;
-  color: var(--accent);
-  margin-top: 2px;
 }
 
-.scoreboard-group.active-group {
-  border-color: #fff;
-  transform: scale(1.08);
-  background: rgba(255, 255, 255, 0.28);
+.turma-alt-text { padding-top: 3px; }
+
+.turma-keys-hint {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.turma-feedback { text-align: center; }
+.turma-feedback-answer { margin: 4px 0 0; font-weight: 700; }
+.turma-feedback-answer:empty { display: none; }
+
+/* ---- Etapa 3: resultado ---- */
+.turma-result-title { margin: 12px 0 4px; }
+
+.turma-result-sub {
+  margin: 0 0 22px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.turma-podium {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.turma-podium-slot {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.turma-podium-medal { font-size: 34px; line-height: 1.1; }
+
+.turma-podium-name {
+  max-width: 100%;
+  font-size: 14px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.turma-podium-score {
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.turma-podium-block {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+  border-radius: 12px 12px 4px 4px;
+  background: var(--group-color);
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.15), 0 6px 16px var(--card-shadow);
+  transform-origin: bottom;
+  animation: podiumRise 0.6s ease both;
+}
+.turma-podium-slot.place-1 .turma-podium-block { height: 130px; }
+.turma-podium-slot.place-2 .turma-podium-block { height: 96px; animation-delay: 0.15s; }
+.turma-podium-slot.place-3 .turma-podium-block { height: 70px; animation-delay: 0.3s; }
+
+@keyframes podiumRise {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+.turma-ranking {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.turma-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--card-bg);
+  border-left: 5px solid var(--group-color);
+  box-shadow: 0 3px 10px var(--card-shadow);
+  text-align: left;
+}
+
+.turma-rank-pos { width: 28px; font-weight: 900; }
+
+.turma-rank-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.turma-rank-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.turma-rank-stats strong { font-size: 16px; color: var(--accent); }
+
+.turma-confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.turma-confetti i {
+  position: absolute;
+  top: -16px;
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+  animation-name: confettiFall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes confettiFall {
+  to { transform: translateY(110vh) rotate(720deg); }
 }
 
 /* ==========================================================================
@@ -1310,13 +1547,13 @@ canvas#wheel:hover {
   h1 { font-size: 1.6rem; }
   .home-subtitle { font-size: 1rem; }
 
-  #selected-question { font-size: 18px; padding: 15px 20px; }
-  .option-btn { font-size: 16px; width: 90%; }
-  #spin-btn, #next-btn { font-size: 16px; padding: 12px 24px; min-width: 140px; }
-  #scoreboard { font-size: 16px; max-width: 90vw; }
-  #turn-indicator { font-size: 18px; }
+  .turma-turn-name { font-size: 20px; padding: 6px 18px; }
+  .turma-team { flex-basis: 28%; }
+  .turma-team-score { font-size: 19px; }
+  .turma-cta { font-size: 16px; padding: 13px 22px; }
+  .turma-chip { font-size: 14px; }
 
-  #turma-pointer, .pointer {
+  .pointer {
     border-left-width: 12px;
     border-right-width: 12px;
     border-top-width: 20px;

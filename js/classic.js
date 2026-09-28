@@ -1,28 +1,8 @@
-// Modo Turma — o jogo original (5 grupos se revezando na roleta), preservado
-// integralmente. A ÚNICA mudança em relação ao script original é que a cor de
-// fundo por grupo agora é aplicada ao container #screen-turma em vez de
-// document.body, para não sobrescrever o tema/fundo das outras telas da V2.0
-// (Home, Modo Solo, Estatísticas, etc.) quando este modo não está ativo.
-// Toda a lógica de jogo (roleta, perguntas, placar, pontuação) é idêntica.
+// Modo Turma: 2 a 5 grupos se revezando na roleta com o banco de 40
+// perguntas originais (SAERO/SAERJ). Fluxo: montar a turma -> girar ->
+// responder -> passar a vez -> pódio.
 
-(function () {
-  const turmaScreenEl = document.getElementById("screen-turma") || document.body;
-
-  // === Grupos ===
-const groups = [  // Cria um array com todos os grupos do jogo
-  { name: "Grupo Azul", color: "#3498db", score: 0 },       // Grupo Azul, cor azul e pontuação inicial 0
-  { name: "Grupo Vermelho", color: "#e74c3c", score: 0 },  // Grupo Vermelho, cor vermelha e pontuação inicial 0
-  { name: "Grupo Verde", color: "#2ecc71", score: 0 },     // Grupo Verde, cor verde e pontuação inicial 0
-  { name: "Grupo Amarelo", color: "#f1c40f", score: 0 },   // Grupo Amarelo, cor amarela e pontuação inicial 0
-  { name: "Grupo Roxo", color: "#9b59b6", score: 0 }       // Grupo Roxo, cor roxa e pontuação inicial 0
-]; // Serve para controlar os grupos, suas cores e pontuações ao longo do jogo
-
-
-let currentGroupIndex = 0;  // Define que o primeiro grupo da vez é o grupo de índice 0 (Grupo Azul)  
-turmaScreenEl.style.setProperty("--turn-color", groups[currentGroupIndex].color); // Cor do grupo da vez (usada no destaque do indicador de turno)
-
-
-  const questions = [
+const TURMA_QUESTIONS = [
   {
     //1
     pergunta: `(D11)(SAERO). Leia o texto abaixo e responda. 
@@ -749,459 +729,547 @@ Estado de Minas, 25 de abril de 2005.
   }
 ];
 
-// Guarda uma cópia intacta das perguntas originais, usada para reiniciar o jogo
-const questionsBackup = questions.map(q => ({ ...q, opcoes: [...q.opcoes] }));
-const totalQuestions = questionsBackup.length;
-
-// funçao8
-//O que esse trecho faz?
-//Ele prepara todos os elementos do jogo na tela e cria algumas variáveis de controle que vão ser usadas para rodar a roleta, mostrar perguntas e controlar o fluxo do jogo.
-
-const canvas = document.getElementById("wheel");            // Pega o elemento <canvas> da roleta na página
-const ctx = canvas.getContext("2d");                        // Cria o contexto 2D para desenhar dentro do canvas
-const spinBtn = document.getElementById("spin-btn");        // Pega o botão de girar a roleta
-const nextBtn = document.getElementById("next-btn");        // Pega o botão para passar para a próxima pergunta
-const selectedQuestionEl = document.getElementById("selected-question");  // Pega o elemento onde a pergunta será mostrada
-const messageEl = document.getElementById("message");       // Pega o elemento onde mensagens como "Acertou" ou "Errou" aparecerão
-const scoreboardEl = document.getElementById("scoreboard"); // Pega o elemento onde o placar do jogo será mostrado
-const turnIndicatorEl = document.getElementById("turn-indicator"); // Pega o elemento que mostra de quem é a vez
-const progressEl = document.getElementById("progress");     // Pega o elemento que mostra o progresso das perguntas
-
-
-// Criar botão para ver placar final (inicialmente escondido)
-const finalScoreBtn = document.createElement("button");          // Cria um botão novo dinamicamente
-finalScoreBtn.textContent = "🏁 Ver placar final";                // Define o texto do botão como "Ver placar final"
-finalScoreBtn.className = "turma-secondary-btn";                 // Aplica o estilo visual (antes ficava sem nenhuma classe)
-finalScoreBtn.style.display = "none";                            // Inicialmente esconde o botão
-finalScoreBtn.style.marginTop = "10px";                          // Adiciona uma margem superior para separar visualmente
-finalScoreBtn.onclick = showFinalScoreboard;                     // Define que, ao clicar, chama a função para mostrar o placar final
-selectedQuestionEl.parentNode.appendChild(finalScoreBtn);       // Adiciona o botão na página, logo após a área de perguntas
-
-// Criar botão para reiniciar o jogo (inicialmente escondido)
-const restartBtn = document.createElement("button");             // Cria um botão novo dinamicamente
-restartBtn.textContent = "🔄 Jogar novamente";                    // Define o texto do botão
-restartBtn.id = "restart-btn";
-restartBtn.style.display = "none";                                // Inicialmente esconde o botão
-restartBtn.style.marginTop = "10px";                               // Adiciona uma margem superior
-restartBtn.onclick = restartGame;                                  // Define que, ao clicar, chama a função de reinício
-selectedQuestionEl.parentNode.appendChild(restartBtn);            // Adiciona o botão na página
-
-
-let angle = 0;                 // Guarda o ângulo atual da roleta (posição de giro)
-let spinning = false;          // Indica se a roleta está girando ou não
-let currentQuestion = null;    // Armazena a pergunta que está sendo respondida no momento
-let questionAnswered = true;   // Indica se a pergunta atual já foi respondida (true = sim, false = não)
-
-
-
-
-
-
-
-
-
-
-
-
-// FUNÇAO 1
-// O que essa função faz?
-//Essa função desenha a roleta ( faz fica redonda )
-//usando o canvas do HTML, que é uma tela onde podemos desenhar com código.
-// Paleta vibrante (as mesmas cores das categorias do Modo Solo), cicladas
-// pelas fatias, no lugar do amarelo/laranja alternado original — com até 40
-// fatias, os números "Q1, Q2..." ficavam pequenos demais pra ler mesmo, e a
-// pergunta sorteada já aparece por extenso embaixo da roleta.
-const WHEEL_PALETTE = ["#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c"];
-
-function drawWheel() {
-  const numSegments = questions.length;                     // Define quantas fatias a roleta terá, igual ao número de perguntas
-  const angleStep = (2 * Math.PI) / numSegments;           // Calcula o ângulo de cada fatia em radianos
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);        // Limpa o canvas para redesenhar a roleta
-
-  for (let i = 0; i < numSegments; i++) {
-    const startAngle = i * angleStep;                      // Define o ângulo inicial da fatia
-    const endAngle = startAngle + angleStep;               // Define o ângulo final da fatia
-
-    ctx.fillStyle = WHEEL_PALETTE[i % WHEEL_PALETTE.length]; // Cicla pela paleta de cores vibrantes
-    ctx.beginPath();                                       // Inicia o desenho da fatia
-    ctx.moveTo(175, 175);                                  // Move para o centro da roleta
-    ctx.arc(175, 175, 175, startAngle, endAngle);         // Desenha o arco da fatia
-    ctx.closePath();                                       // Fecha o caminho da fatia
-    ctx.fill();                                            // Preenche a fatia com a cor definida
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";        // Linha fina separando as fatias
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  }
-
-  // Miolo dourado no centro, para dar acabamento (puramente decorativo).
-  ctx.beginPath();
-  ctx.arc(175, 175, 22, 0, 2 * Math.PI);
-  ctx.fillStyle = "#ffd700";
-  ctx.fill();
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// função 2
-//Essa função atualiza o placar do jogo na tela.
-//Ela mostra os grupos, muda a cor de fundo conforme o grupo da vez, e escreve quantos pontos cada grupo tem.
-function updateScoreboard() {
-  const group = groups[currentGroupIndex];  // Pega o grupo que está na vez no momento
-
-  scoreboardEl.innerHTML = "<h3>Placar</h3> ";  // Define o título "Placar" no placar, limpando o conteúdo anterior
-
-groups.forEach(g => {  // Percorre todos os grupos da lista "groups"
-  const groupDiv = document.createElement("div");  // Cria um elemento <div> para representar cada grupo
-  groupDiv.className = "scoreboard-group";         // Adiciona a classe "scoreboard-group" para estilização
-  if (g === group) {                                // Se for o grupo da vez...
-    groupDiv.classList.add("active-group");         // ...destaca visualmente esse grupo no placar
-  }
-
-  const nameEl = document.createElement("div");    // Cria um <div> para mostrar o nome do grupo
-  nameEl.className = "group-name";                 // Define a classe "group-name"
-
-  const dotEl = document.createElement("span");    // Bolinha colorida com a cor do grupo (identidade visual)
-  dotEl.className = "group-color-dot";
-  dotEl.style.backgroundColor = g.color;
-  nameEl.appendChild(dotEl);
-  nameEl.appendChild(document.createTextNode(g.name)); // Coloca o nome do grupo dentro da <div>
-
-  const scoreEl = document.createElement("div");   // Cria um <div> para mostrar a pontuação do grupo
-  scoreEl.className = "group-score";               // Define a classe "group-score"
-  scoreEl.textContent = `${g.score} ponto${g.score !== 1 ? 's' : ''}`; // Mostra a pontuação (se >1 coloca "pontos")
-
-  groupDiv.appendChild(nameEl);   // Adiciona o nome do grupo dentro da div principal do grupo
-  groupDiv.appendChild(scoreEl);  // Adiciona a pontuação dentro da div principal do grupo
-
-  scoreboardEl.appendChild(groupDiv); // Adiciona a div do grupo dentro do placar principal
-});
-
-  turnIndicatorEl.textContent = `🎯 Vez do: ${group.name}`; // Mostra de quem é a vez de jogar
-} // Resultado: o placar mostra todos os grupos com seus nomes e pontos atualizados, e destaca o grupo da vez
-
-
-// Atualiza o texto de progresso, mostrando quantas perguntas já foram respondidas
-function updateProgress() {
-  const answered = totalQuestions - questions.length;   // Calcula quantas perguntas já saíram da roleta
-  progressEl.textContent = `Pergunta ${Math.min(answered + 1, totalQuestions)} de ${totalQuestions} — ${questions.length} restante${questions.length !== 1 ? 's' : ''}`;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// função 3
-//O que essa função faz?
-
-//Essa função mostra uma pergunta na tela com várias opções de resposta.
-//Cada opção vira um botão, e quando a pessoa clica, o sistema vai verificar se está certo ou errado.
-function showQuestion(q) {  
-  selectedQuestionEl.innerHTML = q.pergunta + "<br><br>";  // Mostra o texto da pergunta na tela, com duas quebras de linha
-
-  q.opcoes.forEach(op => {   // Percorre todas as opções de resposta da pergunta recebida (q.opcoes)
-    const btn = document.createElement("button");   // Cria um botão para cada opção
-    btn.className = "option-btn";                   // Define a classe "option-btn" para estilização
-    btn.textContent = op;                           // Define o texto do botão como o texto da opção
-    btn.onclick = () => checkAnswer(op, q.resposta, btn); // Quando o botão for clicado, chama a função checkAnswer
-                                                     // passando a opção escolhida, a resposta correta e o próprio botão
-    selectedQuestionEl.appendChild(btn);            // Adiciona o botão na tela, logo abaixo da pergunta
-  });
-} // Resultado: mostra a pergunta e cria os botões para que o jogador escolha uma resposta
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// função 4
-//O que essa função faz?
-//Ela é chamada quando alguém escolhe uma opção de resposta.
-//A função confere se a resposta está certa ou errada, dá os pontos e atualiza o placar.
-function checkAnswer(op, correct, btnEl) {
-  const currentGroup = groups[currentGroupIndex];   // Pega o grupo que está jogando no momento
-  const selectedLetter = op.trim().charAt(0).toUpperCase(); // Pega a primeira letra da opção escolhida e deixa em maiúscula
-  const correctLetter = correct.trim().toUpperCase(); // Normaliza a letra correta para maiúscula
-
-  if (selectedLetter === correctLetter) {   // Verifica se a letra escolhida é igual à resposta correta
-    messageEl.textContent = "✅ Acertou! +1 ponto";  // Mostra mensagem de acerto na tela
-    currentGroup.score++;                           // Adiciona +1 ponto ao grupo atual
-  } else {
-    messageEl.textContent = "❌ Errou! Resposta correta: " + correct; // Mostra mensagem de erro e a resposta certa
-  }
-
-  updateScoreboard();   // Atualiza o placar depois da resposta
-
-  document.querySelectorAll(".option-btn").forEach(b => {
-    b.disabled = true;                               // Desativa todos os botões de opções, para não poder clicar de novo na mesma pergunta
-    const letter = b.textContent.trim().charAt(0).toUpperCase();
-    if (letter === correctLetter) {
-      b.classList.add("correct");                    // Destaca em verde a opção correta
-    } else if (b === btnEl) {
-      b.classList.add("wrong");                       // Destaca em vermelho a opção errada escolhida
+const TurmaGame = (() => {
+  const GROUP_PRESETS = [
+    { name: "Grupo Azul", color: "#3498db" },
+    { name: "Grupo Vermelho", color: "#e74c3c" },
+    { name: "Grupo Verde", color: "#2ecc71" },
+    { name: "Grupo Amarelo", color: "#f1c40f" },
+    { name: "Grupo Roxo", color: "#9b59b6" }
+  ];
+  const LENGTHS = { rapida: 10, media: 20, completa: 40 };
+  const WHEEL_PALETTE = ["#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c"];
+  const DARK_TEXT_COLORS = ["#f1c40f"];
+  const WHEEL_SIZE = 340;
+  const SPIN_SECONDS = 3.4;
+  const SETUP_KEY = "gira_turma_setup_v1";
+  const MAX_NAME = 20;
+  const MEDALS = ["🥇", "🥈", "🥉"];
+
+  const $ = id => document.getElementById(id);
+
+  let setup = loadSetup();
+  let game = null;
+  let view = "setup";
+  let rotation = 0;
+
+  function loadSetup() {
+    const fallback = { count: 5, names: GROUP_PRESETS.map(g => g.name), length: "completa" };
+    try {
+      const saved = JSON.parse(localStorage.getItem(SETUP_KEY));
+      if (!saved) return fallback;
+      const count = parseInt(saved.count, 10);
+      return {
+        count: count >= 2 && count <= 5 ? count : 5,
+        names: GROUP_PRESETS.map((g, i) =>
+          Array.isArray(saved.names) && typeof saved.names[i] === "string" ? saved.names[i].slice(0, MAX_NAME) : g.name
+        ),
+        length: saved.length in LENGTHS ? saved.length : "completa"
+      };
+    } catch {
+      return fallback;
     }
-  });
-
-  // Remove a pergunta respondida do array para não repetir
-  const indexToRemove = questions.indexOf(currentQuestion); // Acha a posição da pergunta atual no array
-  if (indexToRemove > -1) {
-    questions.splice(indexToRemove, 1);   // Remove a pergunta da lista
   }
 
-  questionAnswered = true;   // Marca que a pergunta já foi respondida
-  updateProgress();          // Atualiza o texto de progresso
-
-  if (questions.length === 0) {    // Se não houver mais perguntas...
-    spinBtn.disabled = true;       // Desativa o botão de girar
-    nextBtn.style.display = "none"; // Esconde o botão de próxima pergunta
-    finalScoreBtn.style.display = "inline-block"; // Mostra o botão para ver o placar final
-  } else {
-    nextBtn.style.display = "inline-block"; // Se ainda tem perguntas, mostra o botão de próxima pergunta
+  function saveSetup() {
+    try {
+      localStorage.setItem(SETUP_KEY, JSON.stringify(setup));
+    } catch {}
   }
 
-  spinBtn.disabled = true;   // Desativa o botão de girar até passar para a próxima rodada
-}
-
-
-nextBtn.addEventListener("click", () => {                 // Quando o botão "Próxima Pergunta" for clicado, executa a função
-  if (questions.length === 0) return; // Não faz nada se acabou  // Se não houver mais perguntas, sai da função e não faz nada
-
-  currentGroupIndex = (currentGroupIndex + 1) % groups.length;  // Passa a vez para o próximo grupo (volta ao primeiro se chegar no último)
-  turmaScreenEl.style.setProperty("--turn-color", groups[currentGroupIndex].color); // Cor do grupo da vez (usada no destaque do indicador de turno)
-  selectedQuestionEl.innerHTML = "";  // Limpa a área da pergunta na tela
-  messageEl.textContent = "";         // Limpa a mensagem de acerto/erro
-  nextBtn.style.display = "none";     // Esconde o botão "Próxima Pergunta"
-
-  spinBtn.disabled = false;           // Reativa o botão de girar a roleta
-
-  drawWheel();                        // Redesenha a roleta com as perguntas restantes
-  updateScoreboard();                 // Atualiza o placar e o indicador de turno para o novo grupo
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//funçao 5 
-//O que essa função faz?
-//Essa função faz a roleta girar quando o jogador clica no botão.
-//Depois que a roleta para de girar, ela escolhe uma pergunta aleatória, mostra na tela e impede que a roleta seja girada novamente até que a pergunta seja respondida.
-spinBtn.addEventListener("click", () => {   // Quando o botão "Girar a Roleta" for clicado, executa a função
-  if (spinning || !questionAnswered || questions.length === 0) return; 
-  // Se a roleta já estiver girando, ou a pergunta anterior ainda não foi respondida,
-  // ou não houver mais perguntas, a função para e não faz nada.
-
-  spinning = true;             // Marca que a roleta está girando
-  questionAnswered = false;    // Marca que ainda não tem pergunta respondida nessa rodada
-  spinBtn.disabled = true;     // Desabilita o botão já no início do giro, não só depois que a pergunta aparece
-
-  const numSegments = questions.length;    // Conta quantos segmentos (perguntas) ainda existem
-  const randomSpin = Math.floor(Math.random() * 360) + 720;  
-  // Gera um valor aleatório para o giro (entre 720° e 1080° = de 2 a 3 voltas completas)
-  const finalAngle = angle + randomSpin;   // Soma o ângulo atual com o novo giro
-
-  canvas.style.transition = "transform 3s ease-out"; // Define uma animação de 3 segundos para girar suavemente
-  canvas.style.transform = `rotate(${finalAngle}deg)`; // Gira a roleta até o ângulo calculado
-
-  setTimeout(() => {   // Depois de 3 segundos (tempo da animação) executa:
-    angle = finalAngle % 360;  // Atualiza o ângulo para a posição final da roleta
-    const anglePerSegment = 360 / numSegments;
-    // O ponteiro fica fixo no topo (posição 270° no sistema de ângulos do canvas).
-    // Depois de girar o canvas "angle" graus no sentido horário, descobrimos qual
-    // fatia original ficou sob o ponteiro fazendo o caminho inverso.
-    const pointerAngle = ((270 - angle) % 360 + 360) % 360;
-    const selectedIndex = Math.floor(pointerAngle / anglePerSegment) % numSegments;
-    // Calcula qual segmento (pergunta) caiu sob o ponteiro, baseado no ângulo final
-
-    currentQuestion = questions[selectedIndex];  // Define a pergunta sorteada como a atual
-    showQuestion(currentQuestion);               // Mostra a pergunta e as opções na tela
-
-    spinBtn.disabled = true;  // Desativa o botão de girar até a rodada terminar
-
-    spinning = false;         // Marca que a roleta parou de girar
-  }, 3000);                   // Tempo de espera = 3 segundos (igual à animação)
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//funçao 6
-//O que essa função faz?
-
-//Essa função mostra o placar final do jogo quando todas as perguntas foram respondidas.
-//Ela indica quem venceu ou se houve empate, mostra os pontos de todos os grupos e esconde os botões que não são mais necessários.
-function showFinalScoreboard() {
-  selectedQuestionEl.innerHTML = "<h2>Fim do jogo!</h2>"; // Mostra o título de encerramento
-  messageEl.textContent = ""; // Limpa qualquer mensagem anterior
-  finalScoreBtn.style.display = "none"; // Esconde o botão de mostrar placar final (se tiver)
-
-  // Ordena os grupos por pontuação em ordem decrescente
-  const sortedGroups = [...groups].sort((a, b) => b.score - a.score);
-
-  // Pega a maior pontuação
-  const maxScore = sortedGroups[0].score;
-
-  // Verifica se há empate (mais de um com a mesma pontuação máxima)
-  const winners = sortedGroups.filter(g => g.score === maxScore);
-
-  // Define a mensagem do vencedor ou do empate
-  let winnerText = winners.length === 1
-    ? `🏆 Vencedor: ${winners[0].name} com ${winners[0].score} ponto${winners[0].score !== 1 ? 's' : ''}!`
-    : `🏆 Empate entre: ${winners.map(g => g.name).join(", ")} com ${maxScore} pontos!`;
-
-  // Monta o HTML do placar final
-  let scoreboardHTML = "<h3>Placar Final</h3>";
-  sortedGroups.forEach(g => {
-    scoreboardHTML += `<div><strong>${g.name}:</strong> ${g.score} ponto${g.score !== 1 ? 's' : ''}</div>`;
-  });
-
-  // Exibe o vencedor e o placar na tela
-  selectedQuestionEl.innerHTML += `<p>${winnerText}</p>${scoreboardHTML}`;
-
-  // Esconde os botões de girar e avançar, já que o jogo terminou
-  spinBtn.style.display = "none";
-  nextBtn.style.display = "none";
-  progressEl.textContent = "";        // Limpa o texto de progresso
-  turnIndicatorEl.textContent = "";   // Limpa o indicador de turno
-
-  // Mostra o botão para jogar novamente
-  restartBtn.style.display = "inline-block";
-}
-
-
-// função 7
-// Reinicia o jogo do zero: zera os placares, restaura as perguntas originais
-// e devolve a roleta e os botões ao estado inicial.
-function restartGame() {
-  groups.forEach(g => g.score = 0);         // Zera a pontuação de todos os grupos
-  currentGroupIndex = 0;                    // Volta para o primeiro grupo
-  turmaScreenEl.style.setProperty("--turn-color", groups[currentGroupIndex].color); // Cor do grupo da vez (usada no destaque do indicador de turno)
-
-  questions.length = 0;                     // Esvazia a lista de perguntas atual
-  questionsBackup.forEach(q => questions.push({ ...q, opcoes: [...q.opcoes] })); // Repõe todas as perguntas originais
-
-  canvas.style.transition = "none";         // Remove a animação temporariamente
-  canvas.style.transform = "rotate(0deg)";  // Reseta a rotação visual da roleta
-  void canvas.offsetWidth;                  // Força o navegador a aplicar o reset antes de reativar a transição
-  canvas.style.transition = "";             // Reativa a animação de giro
-
-  angle = 0;                                // Reseta o ângulo acumulado
-  spinning = false;                         // Garante que a roleta não está girando
-  currentQuestion = null;                   // Limpa a pergunta atual
-  questionAnswered = true;                  // Libera o botão de girar
-
-  selectedQuestionEl.innerHTML = "";        // Limpa a área de pergunta
-  messageEl.textContent = "";               // Limpa a mensagem de acerto/erro
-
-  spinBtn.style.display = "inline-block";   // Mostra novamente o botão de girar
-  spinBtn.disabled = false;                 // Reativa o botão de girar
-  nextBtn.style.display = "none";           // Esconde o botão de próxima pergunta
-  finalScoreBtn.style.display = "none";     // Esconde o botão de placar final
-  restartBtn.style.display = "none";        // Esconde o botão de reiniciar
-
-  drawWheel();          // Redesenha a roleta completa
-  updateScoreboard();    // Atualiza o placar e o indicador de turno
-  updateProgress();      // Atualiza o texto de progresso
-}
-
-
-// Inicialização
-drawWheel();
-updateScoreboard();
-updateProgress();
-
+  // Arredonda para baixo até um múltiplo do número de grupos, para que todos
+  // os grupos respondam a mesma quantidade de perguntas.
+  function questionCount() {
+    const target = Math.min(LENGTHS[setup.length], TURMA_QUESTIONS.length);
+    return Math.max(setup.count, Math.floor(target / setup.count) * setup.count);
+  }
+
+  function shuffle(list) {
+    const a = [...list];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function plural(n, singular, pluralForm) {
+    return `${n} ${n === 1 ? singular : pluralForm}`;
+  }
+
+  function parseOption(raw) {
+    const match = raw.trim().match(/^([a-eA-E])\)\s*([\s\S]*)$/);
+    return match ? { letter: match[1].toUpperCase(), text: match[2] } : { letter: "?", text: raw };
+  }
+
+  // ---------------------------------------------------------------- views
+
+  function showView(name) {
+    view = name;
+    $("turma-setup").hidden = name !== "setup";
+    $("turma-play").hidden = name !== "play";
+    $("turma-result").hidden = name !== "result";
+    $("turma-end").hidden = name !== "play";
+    $("turma-round").hidden = name !== "play";
+    window.scrollTo(0, 0);
+  }
+
+  // ---------------------------------------------------------------- setup
+
+  function renderSetup() {
+    document.querySelectorAll("#turma-count .turma-chip").forEach(b => {
+      b.classList.toggle("selected", Number(b.dataset.count) === setup.count);
+      b.setAttribute("aria-pressed", String(Number(b.dataset.count) === setup.count));
+    });
+    document.querySelectorAll("#turma-length .turma-chip").forEach(b => {
+      b.classList.toggle("selected", b.dataset.length === setup.length);
+      b.setAttribute("aria-pressed", String(b.dataset.length === setup.length));
+    });
+
+    const namesEl = $("turma-names");
+    namesEl.replaceChildren();
+    for (let i = 0; i < setup.count; i++) {
+      const row = el("label", "turma-name-row");
+      row.style.setProperty("--group-color", GROUP_PRESETS[i].color);
+      const input = el("input");
+      input.type = "text";
+      input.maxLength = MAX_NAME;
+      input.value = setup.names[i];
+      input.placeholder = GROUP_PRESETS[i].name;
+      input.setAttribute("aria-label", `Nome do grupo ${i + 1}`);
+      input.addEventListener("input", () => {
+        setup.names[i] = input.value;
+        saveSetup();
+      });
+      row.append(el("span", "turma-dot"), input);
+      namesEl.appendChild(row);
+    }
+
+    const n = questionCount();
+    $("turma-summary").textContent =
+      `${plural(n, "pergunta", "perguntas")} · ${plural(n / setup.count, "pergunta", "perguntas")} para cada grupo`;
+  }
+
+  function wireSetup() {
+    document.querySelectorAll("#turma-count .turma-chip").forEach(b =>
+      b.addEventListener("click", () => {
+        setup.count = Number(b.dataset.count);
+        saveSetup();
+        renderSetup();
+      })
+    );
+    document.querySelectorAll("#turma-length .turma-chip").forEach(b =>
+      b.addEventListener("click", () => {
+        setup.length = b.dataset.length;
+        saveSetup();
+        renderSetup();
+      })
+    );
+    $("turma-start").addEventListener("click", startGame);
+  }
+
+  // ---------------------------------------------------------------- game
+
+  function startGame() {
+    GameAudio.unlock();
+    const groups = [];
+    for (let i = 0; i < setup.count; i++) {
+      const name = (setup.names[i] || "").trim().slice(0, MAX_NAME) || GROUP_PRESETS[i].name;
+      groups.push({ name, color: GROUP_PRESETS[i].color, score: 0, answered: 0 });
+    }
+    const n = questionCount();
+    const deck = shuffle(TURMA_QUESTIONS.map((q, i) => ({ num: i + 1, q })))
+      .slice(0, n)
+      .sort((a, b) => a.num - b.num);
+
+    game = { groups, deck, total: n, done: 0, turn: 0, current: null, answered: false, spinning: false };
+    resetWheelRotation();
+    showView("play");
+    showWheelStage();
+    renderPlay();
+  }
+
+  function currentGroup() {
+    return game.groups[game.turn];
+  }
+
+  function nextGroup() {
+    return game.groups[(game.turn + 1) % game.groups.length];
+  }
+
+  function renderPlay() {
+    const shown = Math.min(game.done + 1, game.total);
+    $("turma-round").textContent = `Pergunta ${shown} de ${game.total}`;
+    $("turma-progress-fill").style.width = `${(game.done / game.total) * 100}%`;
+
+    renderTeams();
+
+    const group = currentGroup();
+    $("screen-turma").style.setProperty("--turn-color", group.color);
+    $("turma-turn-name").textContent = group.name;
+    drawWheel();
+  }
+
+  function renderTeams(bumpIndex = -1) {
+    const teamsEl = $("turma-teams");
+    teamsEl.replaceChildren();
+    game.groups.forEach((g, i) => {
+      const card = el("div", "turma-team" + (i === game.turn ? " active" : ""));
+      card.style.setProperty("--group-color", g.color);
+      const name = el("div", "turma-team-name");
+      name.append(el("span", "turma-dot"), el("span", "turma-team-label", g.name));
+      const score = el("div", "turma-team-score" + (i === bumpIndex ? " bump" : ""), String(g.score));
+      score.appendChild(el("small", "", g.score === 1 ? " pt" : " pts"));
+      card.append(name, score);
+      teamsEl.appendChild(card);
+    });
+  }
+
+  function showWheelStage() {
+    $("turma-wheel-stage").hidden = false;
+    $("turma-question").hidden = true;
+    $("turma-spin").disabled = false;
+  }
+
+  function resetWheelRotation() {
+    const canvas = $("turma-wheel");
+    rotation = 0;
+    canvas.style.transition = "none";
+    canvas.style.transform = "rotate(0deg)";
+    void canvas.offsetWidth;
+    canvas.style.transition = "";
+  }
+
+  function drawWheel() {
+    const canvas = $("turma-wheel");
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (canvas.width !== WHEEL_SIZE * dpr) {
+      canvas.width = WHEEL_SIZE * dpr;
+      canvas.height = WHEEL_SIZE * dpr;
+    }
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, WHEEL_SIZE, WHEEL_SIZE);
+
+    const n = game.deck.length;
+    if (!n) return;
+    const c = WHEEL_SIZE / 2;
+    const radius = c - 7;
+    const step = (2 * Math.PI) / n;
+    const fontSize = Math.max(11, Math.min(18, radius * 0.8 * step * 0.6));
+
+    for (let i = 0; i < n; i++) {
+      let color = WHEEL_PALETTE[i % WHEEL_PALETTE.length];
+      // Evita que a última fatia fique com a mesma cor da primeira (vizinhas).
+      if (n > 1 && i === n - 1 && i % WHEEL_PALETTE.length === 0) color = WHEEL_PALETTE[2];
+
+      const start = i * step;
+      ctx.beginPath();
+      ctx.moveTo(c, c);
+      ctx.arc(c, c, radius, start, start + step);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      if (n > 1) {
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.55)";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      ctx.save();
+      ctx.translate(c, c);
+      ctx.rotate(start + step / 2);
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.font = `800 ${fontSize}px 'Segoe UI', Arial, sans-serif`;
+      ctx.fillStyle = DARK_TEXT_COLORS.includes(color) ? "#3b2900" : "#ffffff";
+      ctx.fillText(String(game.deck[i].num), radius - 10, 0);
+      ctx.restore();
+    }
+
+    ctx.beginPath();
+    ctx.arc(c, c, c - 3.5, 0, 2 * Math.PI);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+    ctx.lineWidth = 7;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(c, c, 30, 0, 2 * Math.PI);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(c, c, 24, 0, 2 * Math.PI);
+    ctx.fillStyle = "#ffd700";
+    ctx.fill();
+    ctx.fillStyle = "#3b2900";
+    ctx.font = "900 22px 'Segoe UI', Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("?", c, c + 1);
+  }
+
+  function spin() {
+    if (!game || game.spinning || game.current || !game.deck.length) return;
+    game.spinning = true;
+    $("turma-spin").disabled = true;
+    $("turma-end").disabled = true;
+
+    const canvas = $("turma-wheel");
+    const turns = 4 + Math.floor(Math.random() * 2);
+    rotation += turns * 360 + Math.random() * 360;
+    canvas.style.transition = `transform ${SPIN_SECONDS}s cubic-bezier(0.32, 0.72, 0.14, 1)`;
+    canvas.style.transform = `rotate(${rotation}deg)`;
+    GameAudio.spin();
+
+    setTimeout(() => {
+      const n = game.deck.length;
+      const angle = rotation % 360;
+      const pointerAngle = ((270 - angle) % 360 + 360) % 360;
+      const index = Math.floor(pointerAngle / (360 / n)) % n;
+      game.spinning = false;
+      $("turma-end").disabled = false;
+      game.current = game.deck[index];
+      game.answered = false;
+      showQuestion();
+    }, SPIN_SECONDS * 1000);
+  }
+
+  function showQuestion() {
+    const { num, q } = game.current;
+    const group = currentGroup();
+
+    $("turma-wheel-stage").hidden = true;
+    const card = $("turma-question");
+    card.hidden = false;
+
+    $("turma-question-num").textContent = `Pergunta nº ${num}`;
+    const who = $("turma-question-who");
+    who.style.setProperty("--group-color", group.color);
+    who.replaceChildren(el("span", "turma-dot"), el("span", "", `${group.name} responde`));
+    $("turma-question-text").textContent = q.pergunta;
+
+    const altsEl = $("turma-alts");
+    altsEl.replaceChildren();
+    q.opcoes.forEach(raw => {
+      const opt = parseOption(raw);
+      const btn = el("button", "alt-btn turma-alt");
+      btn.type = "button";
+      btn.dataset.letter = opt.letter;
+      btn.append(el("span", "turma-alt-letter", opt.letter), el("span", "turma-alt-text", opt.text));
+      btn.addEventListener("click", () => answer(opt.letter, btn));
+      altsEl.appendChild(btn);
+    });
+
+    const feedback = $("turma-feedback");
+    feedback.classList.remove("show");
+    feedback.hidden = true;
+
+    $("turma-turn").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function answer(letter, btn) {
+    if (!game || !game.current || game.answered) return;
+    game.answered = true;
+
+    const { q } = game.current;
+    const correctLetter = q.resposta.trim().toUpperCase();
+    const group = currentGroup();
+    const isCorrect = letter === correctLetter;
+    group.answered++;
+    if (isCorrect) {
+      group.score++;
+      GameAudio.correct();
+    } else {
+      GameAudio.wrong();
+      btn.classList.add("shake");
+    }
+
+    let correctText = "";
+    document.querySelectorAll("#turma-alts .turma-alt").forEach(b => {
+      b.disabled = true;
+      if (b.dataset.letter === correctLetter) {
+        b.classList.add("correct");
+        correctText = b.querySelector(".turma-alt-text").textContent;
+      } else if (b === btn) {
+        b.classList.add("wrong");
+      }
+    });
+
+    game.deck = game.deck.filter(item => item !== game.current);
+    game.done++;
+
+    const title = $("turma-feedback-title");
+    title.className = "feedback-title " + (isCorrect ? "correct" : "wrong");
+    title.textContent = isCorrect ? `✅ Acertou! +1 ponto para ${group.name}` : "❌ Não foi dessa vez!";
+    $("turma-feedback-answer").textContent = isCorrect ? "" : `Resposta certa: ${correctLetter}) ${correctText}`;
+
+    const nextBtn = $("turma-next");
+    nextBtn.textContent = game.deck.length ? `➡ Passar a vez para ${nextGroup().name}` : "🏁 Ver resultado final";
+
+    const feedback = $("turma-feedback");
+    feedback.hidden = false;
+    feedback.classList.add("show");
+
+    $("turma-round").textContent = `Pergunta ${game.done} de ${game.total}`;
+    $("turma-progress-fill").style.width = `${(game.done / game.total) * 100}%`;
+    renderTeams(isCorrect ? game.turn : -1);
+
+    feedback.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function next() {
+    if (!game || !game.answered) return;
+    if (!game.deck.length) {
+      showResult();
+      return;
+    }
+    game.turn = (game.turn + 1) % game.groups.length;
+    game.current = null;
+    game.answered = false;
+    showWheelStage();
+    renderPlay();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ---------------------------------------------------------------- result
+
+  function showResult() {
+    const ranked = game.groups
+      .map((g, i) => ({ ...g, order: i }))
+      .sort((a, b) => b.score - a.score || a.order - b.order);
+    ranked.forEach(g => {
+      g.rank = 1 + ranked.filter(o => o.score > g.score).length;
+    });
+
+    const winners = ranked.filter(g => g.rank === 1);
+    const title = $("turma-result-title");
+    if (winners.length === 1) title.textContent = `🏆 ${winners[0].name} venceu!`;
+    else if (winners.length === ranked.length) title.textContent = "🤝 Empate geral!";
+    else title.textContent = `🤝 Empate: ${winners.map(w => w.name).join(" e ")}`;
+
+    $("turma-result-sub").textContent =
+      `${plural(game.done, "pergunta respondida", "perguntas respondidas")} · ${plural(game.groups.length, "grupo", "grupos")}`;
+
+    const podium = $("turma-podium");
+    podium.replaceChildren();
+    const top = ranked.slice(0, 3);
+    const visualOrder = top.length === 3 ? [top[1], top[0], top[2]] : top.length === 2 ? [top[1], top[0]] : top;
+    visualOrder.forEach(g => {
+      const slot = el("div", `turma-podium-slot place-${top.indexOf(g) + 1}`);
+      slot.style.setProperty("--group-color", g.color);
+      slot.append(
+        el("span", "turma-podium-medal", MEDALS[g.rank - 1] || "🎖️"),
+        el("span", "turma-podium-name", g.name),
+        el("span", "turma-podium-score", plural(g.score, "ponto", "pontos")),
+        el("div", "turma-podium-block", `${g.rank}º`)
+      );
+      podium.appendChild(slot);
+    });
+
+    const ranking = $("turma-ranking");
+    ranking.replaceChildren();
+    ranked.forEach(g => {
+      const row = el("div", "turma-rank-row");
+      row.style.setProperty("--group-color", g.color);
+      const accuracy = g.answered ? Math.round((g.score / g.answered) * 100) : 0;
+      const stats = el("div", "turma-rank-stats");
+      stats.append(
+        el("strong", "", plural(g.score, "ponto", "pontos")),
+        el("span", "", `${g.score}/${g.answered} · ${accuracy}% de acerto`)
+      );
+      row.append(el("span", "turma-rank-pos", `${g.rank}º`), el("span", "turma-dot"), el("span", "turma-rank-name", g.name), stats);
+      ranking.appendChild(row);
+    });
+
+    game.current = null;
+    showView("result");
+    GameAudio.victory();
+    launchConfetti(winners.map(w => w.color));
+  }
+
+  function launchConfetti(colors) {
+    if (document.body.classList.contains("reduce-motion")) return;
+    const palette = [...colors, "#ffd700", "#ffffff"];
+    const layer = el("div", "turma-confetti");
+    layer.setAttribute("aria-hidden", "true");
+    for (let i = 0; i < 40; i++) {
+      const piece = el("i");
+      piece.style.left = `${Math.random() * 100}%`;
+      piece.style.background = palette[i % palette.length];
+      piece.style.animationDelay = `${Math.random() * 0.8}s`;
+      piece.style.animationDuration = `${2.2 + Math.random() * 1.4}s`;
+      layer.appendChild(piece);
+    }
+    document.body.appendChild(layer);
+    setTimeout(() => layer.remove(), 4500);
+  }
+
+  // ---------------------------------------------------------------- navigation
+
+  function open() {
+    if (view === "play" && game) {
+      showView("play");
+      return;
+    }
+    game = null;
+    renderSetup();
+    showView("setup");
+  }
+
+  // Retorna true se pode sair da tela (pede confirmação no meio da partida).
+  function requestExit() {
+    if (view === "play" && game) {
+      if (game.spinning) return false;
+      if (!confirm("Sair da partida? O placar desta partida será perdido.")) return false;
+    }
+    game = null;
+    view = "setup";
+    return true;
+  }
+
+  function endEarly() {
+    if (!game || game.spinning) return;
+    if (game.done === 0) {
+      if (confirm("Encerrar a partida? Nenhuma pergunta foi respondida ainda.")) open();
+      return;
+    }
+    if (confirm("Encerrar a partida agora e ver o resultado?")) showResult();
+  }
+
+  function onKeydown(e) {
+    if (!$("screen-turma").classList.contains("active") || view !== "play") return;
+    if (!game || !game.current || game.answered) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    const letter = e.key.toUpperCase();
+    const btn = document.querySelector(`#turma-alts .turma-alt[data-letter="${letter}"]`);
+    if (btn && !btn.disabled) btn.click();
+  }
+
+  function init() {
+    wireSetup();
+    $("turma-spin").addEventListener("click", spin);
+    $("turma-next").addEventListener("click", next);
+    $("turma-end").addEventListener("click", endEarly);
+    $("turma-again").addEventListener("click", startGame);
+    $("turma-change-groups").addEventListener("click", () => {
+      game = null;
+      renderSetup();
+      showView("setup");
+    });
+    document.addEventListener("keydown", onKeydown);
+    renderSetup();
+    showView("setup");
+  }
+
+  init();
+
+  return { open, requestExit };
 })();

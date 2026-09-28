@@ -2,7 +2,7 @@
 // perguntas, a pontuação, as conquistas e as estatísticas continuem
 // funcionando mesmo sem internet depois do primeiro carregamento.
 
-const CACHE_NAME = "gira-conhecimento-v2-cache-v2";
+const CACHE_NAME = "gira-conhecimento-v2-cache-v3";
 
 const APP_SHELL = [
   "./",
