@@ -86,10 +86,10 @@
     </button>
 
     <button class="mode-card turma" id="card-modo-turma">
-      <span class="mode-card-badge classic">🕹️ Clássico</span>
+      <span class="mode-card-badge classic">🏫 Sala de aula</span>
       <span class="mode-emoji">👥</span>
       <h3>Modo Turma</h3>
-      <p>O jogo original: 5 grupos se revezando para responder na roleta.</p>
+      <p>De 2 a 5 grupos se revezando na roleta, com placar ao vivo e pódio no final.</p>
       <div class="mode-card-groups" aria-hidden="true">
         <span style="background:#3498db"></span>
         <span style="background:#e74c3c"></span>
@@ -98,8 +98,9 @@
         <span style="background:#9b59b6"></span>
       </div>
       <div class="mode-card-tags">
-        <span>🎯 40 perguntas</span>
-        <span>🏅 Placar</span>
+        <span>✏️ Nomes dos grupos</span>
+        <span>🎯 10, 20 ou 40 perguntas</span>
+        <span>🏅 Pódio</span>
       </div>
     </button>
   </div>
@@ -108,34 +109,93 @@
 </section>
 
 <!-- ============================================================
-     TELA: MODO TURMA (jogo original — preservado integralmente)
+     TELA: MODO TURMA
      ============================================================ -->
 <section id="screen-turma" class="screen">
-  <button class="topbar-btn" id="btn-turma-home" style="align-self:flex-start; margin: 10px 0 0 6px;">⬅ Início</button>
-
-  <h2>🎲 Modo Turma</h2>
-  <p class="turma-subtitle">5 grupos se revezando na roleta clássica</p>
-
-  <div id="turn-indicator"></div> <!-- Mostra de quem é a vez de jogar -->
-
-  <p class="wheel-hint">Gire para sortear a próxima pergunta</p>
-
-  <div class="turma-wheel-wrapper">
-    <div id="turma-pointer"></div> <!-- Ponteiro fixo que indica a fatia sorteada -->
-    <canvas id="wheel" width="350" height="350"></canvas> <!-- Área onde a roleta será desenhada com JS, tamanho 350x350px -->
+  <div class="turma-topbar">
+    <button class="topbar-btn" id="btn-turma-home">⬅ Início</button>
+    <span class="turma-round" id="turma-round" hidden></span>
+    <button class="topbar-btn" id="turma-end" hidden>🏁 Encerrar</button>
   </div>
 
-  <div id="progress"></div> <!-- Mostra quantas perguntas já foram respondidas -->
+  <!-- Etapa 1: montar a turma -->
+  <div class="turma-view" id="turma-setup">
+    <h2>👥 Modo Turma</h2>
+    <p class="turma-subtitle">Monte os grupos e disputem na roleta!</p>
 
-  <button id="spin-btn">🎲 Girar a Roleta</button> <!-- Botão para girar a roleta, clicável pelo jogador -->
+    <div class="turma-panel">
+      <p class="turma-panel-title">Quantos grupos?</p>
+      <div class="turma-chips" id="turma-count">
+        <button type="button" class="turma-chip" data-count="2">2</button>
+        <button type="button" class="turma-chip" data-count="3">3</button>
+        <button type="button" class="turma-chip" data-count="4">4</button>
+        <button type="button" class="turma-chip" data-count="5">5</button>
+      </div>
 
-  <button id="next-btn">➡ Próxima Pergunta</button> <!-- Botão para passar a vez para o próximo grupo -->
+      <p class="turma-panel-title">Nomes dos grupos</p>
+      <div class="turma-names" id="turma-names"></div>
 
-  <div id="selected-question" aria-live="polite"></div> <!-- Espaço para mostrar a pergunta atual escolhida pela roleta -->
+      <p class="turma-panel-title">Tamanho da partida</p>
+      <div class="turma-chips" id="turma-length">
+        <button type="button" class="turma-chip" data-length="rapida">⚡ Rápida<small>até 10 perguntas</small></button>
+        <button type="button" class="turma-chip" data-length="media">⏱️ Média<small>até 20 perguntas</small></button>
+        <button type="button" class="turma-chip" data-length="completa">🏆 Completa<small>até 40 perguntas</small></button>
+      </div>
 
-  <div id="message" aria-live="polite"></div> <!-- Espaço para mostrar mensagens como "Acertou" ou "Errou" -->
+      <p class="turma-summary" id="turma-summary"></p>
+    </div>
 
-  <div id="scoreboard"></div> <!-- Espaço para mostrar o placar de todos os grupos -->
+    <button type="button" class="turma-cta" id="turma-start">🎲 Começar partida</button>
+  </div>
+
+  <!-- Etapa 2: partida -->
+  <div class="turma-view" id="turma-play" hidden>
+    <div class="turma-progress"><div class="turma-progress-fill" id="turma-progress-fill"></div></div>
+    <div class="turma-teams" id="turma-teams"></div>
+
+    <div class="turma-turn" id="turma-turn">
+      <span class="turma-turn-label">🎯 É a vez de</span>
+      <span class="turma-turn-name"><span class="turma-dot"></span><span id="turma-turn-name"></span></span>
+    </div>
+
+    <div class="turma-wheel-stage" id="turma-wheel-stage">
+      <p class="wheel-hint">Gire para sortear o número da pergunta</p>
+      <div class="turma-wheel-wrapper">
+        <div class="pointer"></div>
+        <canvas id="turma-wheel" width="340" height="340"></canvas>
+      </div>
+      <button type="button" class="turma-cta" id="turma-spin">🎲 Girar a roleta</button>
+    </div>
+
+    <div class="question-card turma-question" id="turma-question" hidden>
+      <div class="question-meta">
+        <span id="turma-question-num"></span>
+        <span class="turma-answering" id="turma-question-who"></span>
+      </div>
+      <div class="question-text" id="turma-question-text"></div>
+      <div class="alternativas" id="turma-alts"></div>
+      <p class="turma-keys-hint">Dica: dá pra responder com as teclas A, B, C, D e E.</p>
+
+      <div class="feedback-panel turma-feedback" id="turma-feedback" aria-live="polite" hidden>
+        <div class="feedback-title" id="turma-feedback-title"></div>
+        <p class="turma-feedback-answer" id="turma-feedback-answer"></p>
+        <button type="button" class="turma-cta next" id="turma-next"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Etapa 3: resultado -->
+  <div class="turma-view" id="turma-result" hidden>
+    <h2 class="turma-result-title" id="turma-result-title"></h2>
+    <p class="turma-result-sub" id="turma-result-sub"></p>
+    <div class="turma-podium" id="turma-podium"></div>
+    <div class="turma-ranking" id="turma-ranking"></div>
+    <div class="solo-end-controls">
+      <button type="button" class="btn primary" id="turma-again">🔄 Jogar de novo</button>
+      <button type="button" class="btn neutral" id="turma-change-groups">👥 Mudar grupos</button>
+      <button type="button" class="btn neutral" id="turma-result-home">🏠 Início</button>
+    </div>
+  </div>
 </section>
 
 <!-- ============================================================

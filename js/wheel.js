@@ -7,6 +7,7 @@ const CategoryWheel = (() => {
   let canvas = null;
   let ctx = null;
   let angle = 0;
+  let rotation = 0;
   let spinning = false;
   const categorias = CATEGORIAS;
 
@@ -54,7 +55,10 @@ const CategoryWheel = (() => {
     const n = categorias.length;
     const voltas = 3 + Math.floor(Math.random() * 2); // 3 a 4 voltas completas
     const randomSpin = voltas * 360 + Math.floor(Math.random() * 360);
-    const finalAngle = angle + randomSpin;
+    // Soma sobre a rotação acumulada (não sobre angle % 360): assim o CSS
+    // sempre gira para frente, nunca "volta" em relação ao giro anterior.
+    rotation += randomSpin;
+    const finalAngle = rotation;
     const duracao = 3.4; // segundos
 
     canvas.style.transition = `transform ${duracao}s cubic-bezier(0.32, 0.72, 0.14, 1)`;

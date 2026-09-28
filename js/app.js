@@ -140,9 +140,16 @@ const App = (() => {
       SoloGame.start();
       showScreen("screen-solo-game");
     });
-    document.getElementById("card-modo-turma").addEventListener("click", () => showScreen("screen-turma"));
+    document.getElementById("card-modo-turma").addEventListener("click", () => {
+      TurmaGame.open();
+      showScreen("screen-turma");
+    });
 
-    document.getElementById("btn-turma-home").addEventListener("click", () => showScreen("screen-home"));
+    ["btn-turma-home", "turma-result-home"].forEach(id =>
+      document.getElementById(id).addEventListener("click", () => {
+        if (TurmaGame.requestExit()) showScreen("screen-home");
+      })
+    );
     document.getElementById("btn-solo-home-top").addEventListener("click", () => {
       if (confirm("Sair da partida atual? O progresso desta rodada será perdido.")) {
         SoloGame.stopClock();
