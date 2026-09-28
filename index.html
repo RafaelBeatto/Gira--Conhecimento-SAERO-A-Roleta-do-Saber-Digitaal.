@@ -69,18 +69,41 @@
      ============================================================ -->
 <section id="screen-mode-select" class="screen">
   <h2>Escolha o modo de jogo</h2>
+  <p class="mode-select-subtitle">Como você quer jogar hoje?</p>
+
   <div class="mode-cards">
-    <div class="mode-card" id="card-modo-solo">
+    <button class="mode-card solo" id="card-modo-solo">
+      <span class="mode-card-badge new">✨ Novo</span>
       <span class="mode-emoji">🕹️</span>
       <h3>Modo Solo</h3>
-      <p>Roleta de categorias, combo, vidas, cronômetro, dicas e conquistas.</p>
-    </div>
-    <div class="mode-card" id="card-modo-turma">
+      <p>Gire a roleta de categorias e jogue sozinho, no seu ritmo.</p>
+      <div class="mode-card-tags">
+        <span>🔥 Combo</span>
+        <span>❤️ Vidas</span>
+        <span>⏱️ Cronômetro</span>
+        <span>🏆 Conquistas</span>
+      </div>
+    </button>
+
+    <button class="mode-card turma" id="card-modo-turma">
+      <span class="mode-card-badge classic">🕹️ Clássico</span>
       <span class="mode-emoji">👥</span>
       <h3>Modo Turma</h3>
-      <p>O jogo clássico: 5 grupos se revezando para responder na roleta.</p>
-    </div>
+      <p>O jogo original: 5 grupos se revezando para responder na roleta.</p>
+      <div class="mode-card-groups" aria-hidden="true">
+        <span style="background:#3498db"></span>
+        <span style="background:#e74c3c"></span>
+        <span style="background:#2ecc71"></span>
+        <span style="background:#f1c40f"></span>
+        <span style="background:#9b59b6"></span>
+      </div>
+      <div class="mode-card-tags">
+        <span>🎯 40 perguntas</span>
+        <span>🏅 Placar</span>
+      </div>
+    </button>
   </div>
+
   <button class="btn neutral" id="btn-mode-select-back" style="margin-top:22px;">⬅ Voltar</button>
 </section>
 
