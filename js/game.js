@@ -38,7 +38,24 @@ const SoloGame = (() => {
   let timerInterval = null;
   let dicaUsada = false;
 
+  // Identifica a partida atual: um giro que termina depois que o jogador saiu
+  // (ou começou outra partida) é descartado em vez de abrir uma pergunta
+  // e um cronômetro "fantasmas" em segundo plano.
+  let partidaId = 0;
+  let partidaAtiva = false;
+
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   function start() {
+    partidaId++;
+    partidaAtiva = true;
+    clearInterval(timerInterval);
     const settings = Storage.getSettings();
     vidas = settings.vidasOn ? 3 : Infinity;
     pontuacao = 0;
@@ -63,20 +80,31 @@ const SoloGame = (() => {
     document.getElementById("solo-event-banner").classList.remove("show");
     document.getElementById("solo-spin-btn").disabled = false;
 
+    tempoTotal = TEMPO_PADRAO;
+    tempoRestante = TEMPO_PADRAO;
+    document.getElementById("solo-timer-wrap").style.display = settings.cronometroOn ? "" : "none";
+    updateTimerUI();
+
     CategoryWheel.init("wheel-v2");
     renderHUD();
+  }
+
+  // Sai da partida sem registrar resultado (botão "Início" / "Encerrar" sem respostas).
+  function abandon() {
+    partidaAtiva = false;
+    clearInterval(timerInterval);
   }
 
   function renderHUD() {
     const settings = Storage.getSettings();
     const livesEl = document.getElementById("solo-lives");
     livesEl.style.display = settings.vidasOn ? "" : "none";
-    document.getElementById("solo-lives-text").textContent =
-      vidas === Infinity ? "∞" : "❤️".repeat(Math.max(0, vidas)) || "💔";
+    document.getElementById("solo-lives-text").textContent = vidas === Infinity ? "∞" : String(Math.max(0, vidas));
+    livesEl.querySelector(".hud-icon").textContent = vidas <= 0 ? "💔" : "❤️";
     livesEl.classList.toggle("pulse-danger", settings.vidasOn && vidas <= 1);
 
-    const comboEmoji = combo >= 10 ? "🔥🔥🔥🔥" : combo >= 5 ? "🔥🔥🔥" : combo >= 3 ? "🔥🔥" : combo >= 1 ? "🔥" : "—";
-    document.getElementById("solo-combo-text").textContent = combo > 0 ? `${comboEmoji} x${combo}` : "—";
+    document.getElementById("solo-combo-text").textContent = combo > 0 ? `x${combo}` : "—";
+    document.getElementById("solo-combo").classList.toggle("combo-hot", combo >= 5);
 
     document.getElementById("solo-score-text").textContent = pontuacao;
   }
@@ -98,6 +126,8 @@ const SoloGame = (() => {
     // "Vida extra" só entra no sorteio se puder realmente dar uma vida
     // (senão o banner prometeria um bônus que não teria efeito nenhum).
     if (!settings.vidasOn || vidas >= 3) candidatos = candidatos.filter(e => e.id !== "vida");
+    // Mesmo raciocínio: sem cronômetro, "Resposta relâmpago" não teria efeito.
+    if (!settings.cronometroOn) candidatos = candidatos.filter(e => e.id !== "relampago");
 
     eventoAtivo = candidatos[Math.floor(Math.random() * candidatos.length)];
     GameAudio.special();
@@ -140,10 +170,10 @@ const SoloGame = (() => {
     area.innerHTML = `
       <div class="question-card">
         <div class="question-meta">
-          <span>${cat.emoji} ${currentQuestion.categoria}</span>
+          <span>${cat.emoji} ${escapeHtml(currentQuestion.categoria)}</span>
           <span class="badge-dificuldade ${currentQuestion.dificuldade}">${currentQuestion.dificuldade}</span>
         </div>
-        <div class="question-text">${currentQuestion.pergunta}</div>
+        <div class="question-text">${escapeHtml(currentQuestion.pergunta)}</div>
         <div class="alternativas" id="solo-alternativas"></div>
         <button class="hint-btn" id="hint-btn">💡 Pedir Dica</button>
         <div class="hint-text" id="hint-text" style="display:none;"></div>
@@ -161,6 +191,9 @@ const SoloGame = (() => {
     });
 
     document.getElementById("hint-btn").onclick = onHintClick;
+
+    // No celular a pergunta aparece abaixo da roleta, fora da tela.
+    area.firstElementChild.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function startTimer() {
@@ -238,7 +271,7 @@ const SoloGame = (() => {
 
     const settings = Storage.getSettings();
     const tempoRespostaSeg = (Date.now() - questionStartTime) / 1000;
-    temposPartida.push(Math.min(tempoRespostaSeg, tempoTotal));
+    temposPartida.push(settings.cronometroOn ? Math.min(tempoRespostaSeg, tempoTotal) : tempoRespostaSeg);
     const correto = index === currentQuestion.resposta;
 
     document.querySelectorAll(".alt-btn").forEach(b => { b.disabled = true; });
@@ -356,7 +389,7 @@ const SoloGame = (() => {
 
     panel.innerHTML = `
       <div class="feedback-title ${correto ? "correct" : "wrong"}">${titulo}</div>
-      <div class="feedback-explicacao">${currentQuestion.explicacao}</div>
+      <div class="feedback-explicacao">${escapeHtml(currentQuestion.explicacao)}</div>
       ${correto ? `<div class="feedback-points">+${pontosGanhos || 0} pontos</div>` : ""}
       <button class="btn primary" id="btn-continuar-rodada">${continuarLabel}</button>
     `;
@@ -382,7 +415,9 @@ const SoloGame = (() => {
     document.getElementById("solo-question-area").innerHTML = "";
     document.getElementById("solo-event-banner").classList.remove("show");
 
+    const idDoGiro = partidaId;
     CategoryWheel.spin(categoriaObj => {
+      if (!partidaAtiva || idDoGiro !== partidaId) return;
       currentCategoria = categoriaObj.nome === "Surpresa" ? categoriaAleatoriaReal() : categoriaObj.nome;
       maybeTriggerEvento();
       pickQuestion();
@@ -446,6 +481,8 @@ const SoloGame = (() => {
   }
 
   function endGame() {
+    if (!partidaAtiva) return;
+    partidaAtiva = false;
     clearInterval(timerInterval);
     Storage.registerGameEnd({ pontuacao, maiorComboDaPartida: comboMax });
 
@@ -471,13 +508,19 @@ const SoloGame = (() => {
   // Listeners estáticos (os elementos existem desde o carregamento do HTML).
   document.getElementById("solo-spin-btn").addEventListener("click", onSpinClick);
   document.getElementById("btn-encerrar-partida").addEventListener("click", () => {
-    clearInterval(timerInterval);
+    if (perguntasRespondidas === 0) {
+      if (!confirm("Nenhuma pergunta foi respondida ainda. Sair da partida?")) return;
+      abandon();
+      App.showScreen("screen-home");
+      return;
+    }
+    if (!confirm("Encerrar a partida agora e ver o resultado?")) return;
     endGame();
   });
 
   return {
     start,
     endGame,
-    stopClock: () => clearInterval(timerInterval)
+    abandon
   };
 })();

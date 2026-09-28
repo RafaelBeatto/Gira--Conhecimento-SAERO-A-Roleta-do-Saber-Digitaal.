@@ -134,7 +134,7 @@ Qual é a causa da transformação de Eváglio em torcedor?`,
       "D) O campeonato conquistado pelo time carioca.",
       "E) O desembarque de Eváglio com os torcedores."
     ],
-    resposta: "B"
+    resposta: "A"
   },
   {
     //7
@@ -354,7 +354,7 @@ Que efeito de sentido percebe-se no trecho “... ficavam simplesmente bebendo e
     opcoes: [
       "A) Descrição do comportamento das pessoas.",
       "B) Convite para as pessoas se ajuntarem.",
-      "C) Ordem expressão por imperativos.",
+      "C) Ordem expressa por imperativos.",
       "D) Mistura de sentidos: paladar e audição.",
       "E) Descrição do ambiente físico."
     ],
