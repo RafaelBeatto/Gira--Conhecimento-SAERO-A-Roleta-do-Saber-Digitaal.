@@ -880,6 +880,20 @@ canvas#wheel-v2 {
 /* ==========================================================================
    ESTATÍSTICAS
    ========================================================================== */
+.stats-empty {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 34px 26px;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 16px;
+  box-shadow: 0 6px 16px var(--card-shadow);
+}
+
+.stats-empty-icon { font-size: 2.4rem; display: block; margin-bottom: 10px; }
+.stats-empty p { margin: 4px 0; font-weight: 700; }
+.stats-empty-sub { font-size: 13px; color: var(--text-muted); font-weight: 600 !important; }
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -893,10 +907,19 @@ canvas#wheel-v2 {
   border-radius: 12px;
   padding: 14px;
   box-shadow: 0 4px 12px var(--card-shadow);
+  border-bottom: 3px solid transparent;
 }
 
-.stat-tile .stat-value { font-size: 1.6rem; font-weight: 900; color: var(--accent); }
-.stat-tile .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
+.stat-tile .stat-icon { font-size: 15px; display: block; margin-bottom: 4px; }
+.stat-tile .stat-value { font-size: 1.5rem; font-weight: 900; color: var(--accent); }
+.stat-tile .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; display: block; margin-top: 2px; }
+
+.stat-tile.c-blue { border-bottom-color: #3498db; }
+.stat-tile.c-purple { border-bottom-color: #9b59b6; }
+.stat-tile.c-green { border-bottom-color: #2ecc71; }
+.stat-tile.c-red { border-bottom-color: #e74c3c; }
+.stat-tile.c-gold { border-bottom-color: #f1c40f; }
+.stat-tile.c-orange { border-bottom-color: #e67e22; }
 
 .chart-card {
   background: var(--card-bg);
@@ -906,6 +929,20 @@ canvas#wheel-v2 {
   max-width: 560px;
   margin-top: 10px;
   box-shadow: 0 6px 16px var(--card-shadow);
+}
+
+.chart-card-title {
+  margin: 0 0 12px;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.chart-fallback {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 20px 10px;
+  margin: 0;
 }
 
 /* ==========================================================================

@@ -218,8 +218,16 @@
      ============================================================ -->
 <section id="screen-stats" class="screen">
   <h2>📊 Meu Desempenho</h2>
+
+  <div class="stats-empty" id="stats-empty" style="display:none;">
+    <span class="stats-empty-icon">🎲</span>
+    <p>Você ainda não jogou nenhuma partida no Modo Solo.</p>
+    <p class="stats-empty-sub">Jogue uma rodada para ver suas estatísticas aqui!</p>
+  </div>
+
   <div class="stats-grid" id="stats-grid"></div>
-  <div class="chart-card">
+  <div class="chart-card" id="chart-card">
+    <h3 class="chart-card-title">Aproveitamento por categoria</h3>
     <canvas id="chart-categorias" height="220"></canvas>
   </div>
   <button class="btn neutral" id="btn-stats-home" style="margin-top:20px;">⬅ Voltar</button>
