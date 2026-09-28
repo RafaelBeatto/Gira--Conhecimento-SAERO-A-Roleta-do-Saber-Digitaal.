@@ -95,14 +95,16 @@ const SoloGame = (() => {
 
     const settings = Storage.getSettings();
     let candidatos = EVENTOS.slice();
-    if (!settings.vidasOn) candidatos = candidatos.filter(e => e.id !== "vida");
+    // "Vida extra" só entra no sorteio se puder realmente dar uma vida
+    // (senão o banner prometeria um bônus que não teria efeito nenhum).
+    if (!settings.vidasOn || vidas >= 3) candidatos = candidatos.filter(e => e.id !== "vida");
 
     eventoAtivo = candidatos[Math.floor(Math.random() * candidatos.length)];
     GameAudio.special();
     banner.textContent = `${eventoAtivo.emoji} ${eventoAtivo.nome}!`;
     banner.classList.add("show");
 
-    if (eventoAtivo.id === "vida" && vidas !== Infinity && vidas < 3) {
+    if (eventoAtivo.id === "vida") {
       vidas++;
       renderHUD();
     }
@@ -240,6 +242,7 @@ const SoloGame = (() => {
     const correto = index === currentQuestion.resposta;
 
     document.querySelectorAll(".alt-btn").forEach(b => { b.disabled = true; });
+    document.getElementById("hint-btn").disabled = true;
 
     let pontosGanhos = 0;
     if (correto) {
@@ -320,6 +323,7 @@ const SoloGame = (() => {
       b.disabled = true;
       if (parseInt(b.dataset.idx, 10) === currentQuestion.resposta) b.classList.add("correct");
     });
+    document.getElementById("hint-btn").disabled = true;
 
     perguntasRespondidas++;
     Storage.registerAnswer({ categoria: currentQuestion.categoria, acertou: false, tempoRespostaSeg: tempoTotal });
