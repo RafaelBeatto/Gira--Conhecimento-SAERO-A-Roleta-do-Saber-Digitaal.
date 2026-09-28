@@ -680,7 +680,7 @@ Estado de Minas, 25 de abril de 2005.
     pergunta: "(D26) As raízes do polinômio P(x) = (x - 3) . (x + 3) são:",
     opcoes: [
       "A) –2 e 1",
-      "B) 3 e –1",
+      "B) 3 e –3",
       "C) –3 e 1",
       "D) 3 e 1",
       "E) –3 e –1"
@@ -1073,6 +1073,7 @@ spinBtn.addEventListener("click", () => {   // Quando o botão "Girar a Roleta" 
 
   spinning = true;             // Marca que a roleta está girando
   questionAnswered = false;    // Marca que ainda não tem pergunta respondida nessa rodada
+  spinBtn.disabled = true;     // Desabilita o botão já no início do giro, não só depois que a pergunta aparece
 
   const numSegments = questions.length;    // Conta quantos segmentos (perguntas) ainda existem
   const randomSpin = Math.floor(Math.random() * 360) + 720;  
