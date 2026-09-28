@@ -1067,8 +1067,16 @@ canvas#wheel-v2 {
 }
 
 /* ==========================================================================
-   MODO TURMA (mantém a aparência original do jogo)
+   MODO TURMA (mesma lógica original — visual atualizado para a V2.0)
    ========================================================================== */
+.turma-subtitle {
+  margin-top: -6px;
+  margin-bottom: 4px;
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
 canvas#wheel {
   margin-top: 0;
   background: #fff;
@@ -1086,7 +1094,7 @@ canvas#wheel:hover {
 .turma-wheel-wrapper {
   position: relative;
   display: inline-block;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 #turma-pointer {
@@ -1104,81 +1112,91 @@ canvas#wheel:hover {
 }
 
 #turn-indicator {
-  margin-top: 20px;
-  font-size: 22px;
+  margin-top: 6px;
+  display: inline-block;
+  padding: 8px 22px;
+  border-radius: 999px;
+  background: var(--card-bg);
+  font-size: 17px;
   font-weight: 800;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px var(--card-shadow);
   user-select: none;
 }
 
 #progress {
-  margin-top: 6px;
-  font-size: 15px;
-  opacity: 0.9;
+  margin-top: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-muted);
   user-select: none;
 }
 
-#spin-btn, #next-btn {
-  margin-top: 25px;
+#spin-btn, #next-btn, #restart-btn, .turma-secondary-btn {
+  margin-top: 20px;
   padding: 14px 32px;
   font-size: 18px;
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  font-weight: 700;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 5px 15px var(--card-shadow);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
   user-select: none;
   min-width: 180px;
 }
 
-#spin-btn { background: #27ae60; color: #fff; }
-#spin-btn:hover:not(:disabled) { background: #2ecc71; transform: scale(1.05); }
-#spin-btn:disabled { background: #95a5a6; cursor: not-allowed; box-shadow: none; transform: none; }
-
-#next-btn { background: #d35400; color: #fff; display: none; }
-#next-btn:hover { background: #e67e22; transform: scale(1.05); }
-
-#restart-btn {
-  background: #8e44ad;
-  color: #fff;
+#spin-btn {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  animation: spinBtnGlow 2.4s ease-in-out infinite;
 }
-#restart-btn:hover { background: #9b59b6; transform: scale(1.05); }
+#spin-btn:hover:not(:disabled) { transform: scale(1.05); }
+#spin-btn:disabled { background: #95a5a6; cursor: not-allowed; box-shadow: none; transform: none; animation: none; }
+
+#next-btn { background: linear-gradient(135deg, #d35400, #e67e22); display: none; }
+#next-btn:hover { transform: scale(1.05); }
+
+#restart-btn, .turma-secondary-btn { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
+#restart-btn:hover, .turma-secondary-btn:hover { transform: scale(1.05); }
 
 #selected-question {
-  margin-top: 30px;
-  font-size: 20px;
-  background: rgba(255, 255, 255, 0.15);
-  padding: 20px 25px;
-  border-radius: 15px;
-  max-width: 600px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  margin-top: 22px;
+  font-size: 17px;
+  background: var(--card-bg);
+  padding: 22px 24px;
+  border-radius: 16px;
+  max-width: 620px;
+  width: 100%;
+  box-shadow: 0 8px 20px var(--card-shadow);
   white-space: pre-line;
-  line-height: 1.5;
+  line-height: 1.55;
+  text-align: left;
   user-select: none;
 }
+#selected-question:empty { display: none; margin-top: 0; padding: 0; box-shadow: none; }
 
 .option-btn {
   display: block;
-  margin: 15px auto;
-  padding: 12px 20px;
+  margin: 12px auto 0;
+  padding: 12px 18px;
   border: none;
   border-radius: 12px;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
-  width: 70%;
-  max-width: 400px;
-  background: rgba(255, 255, 255, 0.25);
+  width: 100%;
+  max-width: 560px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.22);
   color: #fff;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transition: background-color 0.3s ease, transform 0.15s ease;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  transition: background-color 0.2s ease, transform 0.15s ease;
   user-select: none;
 }
 
 .option-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.45);
-  transform: scale(1.03);
+  background: rgba(255, 255, 255, 0.42);
+  transform: scale(1.015);
 }
 
 .option-btn:disabled {
@@ -1193,24 +1211,28 @@ canvas#wheel:hover {
 .option-btn.wrong { background: rgba(231, 76, 60, 0.9) !important; color: #fff !important; }
 
 #message {
-  margin-top: 20px;
-  font-size: 22px;
+  margin-top: 16px;
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 12px;
+  background: var(--card-bg-strong);
+  font-size: 18px;
   font-weight: 800;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-  min-height: 28px;
+  box-shadow: 0 4px 12px var(--card-shadow);
   user-select: none;
 }
+#message:empty { display: none; padding: 0; box-shadow: none; margin-top: 0; }
 
 #scoreboard {
-  margin-top: 35px;
-  padding: 20px 30px;
-  border-top: 3px solid rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  font-size: 20px;
+  margin-top: 28px;
+  padding: 20px 26px;
+  background: var(--card-bg);
+  border-radius: 18px;
+  font-size: 18px;
   max-width: 700px;
-  color: #f0f0f0;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  color: #fff;
+  box-shadow: 0 8px 25px var(--card-shadow);
   user-select: none;
   text-align: center;
   font-weight: 600;
@@ -1219,35 +1241,46 @@ canvas#wheel:hover {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  gap: 14px;
 }
 
 #scoreboard h3 {
   width: 100%;
-  margin-bottom: 15px;
-  font-size: 1.8rem;
+  margin: 0 0 6px;
+  font-size: 1.5rem;
   text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
 }
 
 .scoreboard-group {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 15px 25px;
-  min-width: 130px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  flex: 1 1 130px;
-  max-width: 160px;
-  color: #ffd700;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 14px 20px;
+  min-width: 120px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  flex: 1 1 120px;
+  max-width: 150px;
   user-select: none;
   border: 2px solid transparent;
-  transition: transform 0.3s ease, border-color 0.3s ease;
+  transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.scoreboard-group .group-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.scoreboard-group .group-score {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--accent);
+  margin-top: 2px;
 }
 
 .scoreboard-group.active-group {
   border-color: #fff;
   transform: scale(1.08);
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.28);
 }
 
 #scoreboard.bg-azul    { background: rgba(52, 152, 219, 0.35); }
