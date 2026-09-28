@@ -1122,6 +1122,7 @@ canvas#wheel:hover {
   box-shadow: 0 4px 12px var(--card-shadow);
   user-select: none;
 }
+#turn-indicator:empty { display: none; padding: 0; box-shadow: none; margin-top: 0; }
 
 #progress {
   margin-top: 10px;
