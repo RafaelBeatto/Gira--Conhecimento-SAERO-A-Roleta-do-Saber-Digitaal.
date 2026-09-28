@@ -807,32 +807,38 @@ let questionAnswered = true;   // Indica se a pergunta atual já foi respondida 
 // O que essa função faz?
 //Essa função desenha a roleta ( faz fica redonda )
 //usando o canvas do HTML, que é uma tela onde podemos desenhar com código.
-function drawWheel() {  
+// Paleta vibrante (as mesmas cores das categorias do Modo Solo), cicladas
+// pelas fatias, no lugar do amarelo/laranja alternado original — com até 40
+// fatias, os números "Q1, Q2..." ficavam pequenos demais pra ler mesmo, e a
+// pergunta sorteada já aparece por extenso embaixo da roleta.
+const WHEEL_PALETTE = ["#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c"];
+
+function drawWheel() {
   const numSegments = questions.length;                     // Define quantas fatias a roleta terá, igual ao número de perguntas
   const angleStep = (2 * Math.PI) / numSegments;           // Calcula o ângulo de cada fatia em radianos
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);        // Limpa o canvas para redesenhar a roleta
 
-  for (let i = 0; i < numSegments; i++) {                 
+  for (let i = 0; i < numSegments; i++) {
     const startAngle = i * angleStep;                      // Define o ângulo inicial da fatia
     const endAngle = startAngle + angleStep;               // Define o ângulo final da fatia
 
-    ctx.fillStyle = i % 2 === 0 ? "#ffcc00" : "#ff6600";  // Alterna cores das fatias para visual mais bonito
+    ctx.fillStyle = WHEEL_PALETTE[i % WHEEL_PALETTE.length]; // Cicla pela paleta de cores vibrantes
     ctx.beginPath();                                       // Inicia o desenho da fatia
     ctx.moveTo(175, 175);                                  // Move para o centro da roleta
     ctx.arc(175, 175, 175, startAngle, endAngle);         // Desenha o arco da fatia
     ctx.closePath();                                       // Fecha o caminho da fatia
     ctx.fill();                                            // Preenche a fatia com a cor definida
-
-    ctx.save();                                            // Salva o estado atual do canvas
-    ctx.translate(175, 175);                               // Move o ponto de referência para o centro
-    ctx.rotate(startAngle + angleStep / 2);               // Rotaciona para escrever o número da pergunta no centro da fatia
-    ctx.textAlign = "right";                               // Alinha o texto à direita
-    ctx.fillStyle = "#fff";                                // Cor do texto (branco)
-    ctx.font = "bold 14px Arial";                          // Fonte e tamanho do texto
-    ctx.fillText("Q" + (i + 1), 160, 5);                  // Escreve "Q1", "Q2", etc., em cada fatia
-    ctx.restore();                                         // Restaura o estado do canvas para desenhar a próxima fatia
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";        // Linha fina separando as fatias
+    ctx.lineWidth = 1;
+    ctx.stroke();
   }
+
+  // Miolo dourado no centro, para dar acabamento (puramente decorativo).
+  ctx.beginPath();
+  ctx.arc(175, 175, 22, 0, 2 * Math.PI);
+  ctx.fillStyle = "#ffd700";
+  ctx.fill();
 }
 
 
