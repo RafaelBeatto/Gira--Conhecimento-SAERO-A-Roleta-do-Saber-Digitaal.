@@ -239,16 +239,38 @@
 <section id="screen-settings" class="screen">
   <h2>⚙️ Configurações</h2>
   <div class="settings-list">
+
+    <p class="settings-section-title">🔊 Áudio</p>
     <div class="settings-row">
-      <label for="cfg-som">🔊 Som</label>
+      <div class="settings-row-text">
+        <label for="cfg-som">Som</label>
+        <span class="settings-row-desc">Efeitos sonoros de girar, acerto, erro e conquista</span>
+      </div>
       <label class="switch"><input type="checkbox" id="cfg-som"><span class="slider"></span></label>
     </div>
+
+    <p class="settings-section-title">🎨 Aparência</p>
     <div class="settings-row">
-      <label for="cfg-tema">🌙 Tema escuro</label>
+      <div class="settings-row-text">
+        <label for="cfg-tema">Tema escuro</label>
+        <span class="settings-row-desc">Alterna entre tema claro e escuro</span>
+      </div>
       <label class="switch"><input type="checkbox" id="cfg-tema"><span class="slider"></span></label>
     </div>
     <div class="settings-row">
-      <label for="cfg-dificuldade">🎚️ Dificuldade</label>
+      <div class="settings-row-text">
+        <label for="cfg-animacoes">Animações</label>
+        <span class="settings-row-desc">Transições, brilhos e efeitos visuais</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="cfg-animacoes"><span class="slider"></span></label>
+    </div>
+
+    <p class="settings-section-title">🎮 Partida (Modo Solo)</p>
+    <div class="settings-row">
+      <div class="settings-row-text">
+        <label for="cfg-dificuldade">Dificuldade</label>
+        <span class="settings-row-desc">Adaptativa ajusta o nível conforme você joga</span>
+      </div>
       <select id="cfg-dificuldade" class="settings-select">
         <option value="adaptativa">Adaptativa</option>
         <option value="facil">🟢 Fácil</option>
@@ -257,19 +279,26 @@
       </select>
     </div>
     <div class="settings-row">
-      <label for="cfg-cronometro">⏱️ Cronômetro</label>
+      <div class="settings-row-text">
+        <label for="cfg-cronometro">Cronômetro</label>
+        <span class="settings-row-desc">Tempo limite de 15s por pergunta</span>
+      </div>
       <label class="switch"><input type="checkbox" id="cfg-cronometro"><span class="slider"></span></label>
     </div>
     <div class="settings-row">
-      <label for="cfg-vidas">❤️ Vidas</label>
+      <div class="settings-row-text">
+        <label for="cfg-vidas">Vidas</label>
+        <span class="settings-row-desc">3 vidas; a partida acaba se zerarem</span>
+      </div>
       <label class="switch"><input type="checkbox" id="cfg-vidas"><span class="slider"></span></label>
     </div>
-    <div class="settings-row">
-      <label for="cfg-animacoes">✨ Animações</label>
-      <label class="switch"><input type="checkbox" id="cfg-animacoes"><span class="slider"></span></label>
-    </div>
-    <div class="settings-row">
-      <label>🧹 Restaurar progresso</label>
+
+    <p class="settings-section-title">🗑️ Dados</p>
+    <div class="settings-row danger-row">
+      <div class="settings-row-text">
+        <label>Restaurar progresso</label>
+        <span class="settings-row-desc">Apaga estatísticas e conquistas salvas neste navegador</span>
+      </div>
       <button class="btn danger" id="btn-restaurar-progresso" style="padding:8px 14px; font-size:14px;">Apagar</button>
     </div>
   </div>
