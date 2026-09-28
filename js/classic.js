@@ -680,7 +680,7 @@ Estado de Minas, 25 de abril de 2005.
     pergunta: "(D26) As raízes do polinômio P(x) = (x - 3) . (x + 3) são:",
     opcoes: [
       "A) –2 e 1",
-      "B) 3 e –1",
+      "B) 3 e –3",
       "C) –3 e 1",
       "D) 3 e 1",
       "E) –3 e –1"
@@ -770,7 +770,8 @@ const progressEl = document.getElementById("progress");     // Pega o elemento q
 
 // Criar botão para ver placar final (inicialmente escondido)
 const finalScoreBtn = document.createElement("button");          // Cria um botão novo dinamicamente
-finalScoreBtn.textContent = "Ver placar final";                  // Define o texto do botão como "Ver placar final"
+finalScoreBtn.textContent = "🏁 Ver placar final";                // Define o texto do botão como "Ver placar final"
+finalScoreBtn.className = "turma-secondary-btn";                 // Aplica o estilo visual (antes ficava sem nenhuma classe)
 finalScoreBtn.style.display = "none";                            // Inicialmente esconde o botão
 finalScoreBtn.style.marginTop = "10px";                          // Adiciona uma margem superior para separar visualmente
 finalScoreBtn.onclick = showFinalScoreboard;                     // Define que, ao clicar, chama a função para mostrar o placar final
@@ -1073,6 +1074,7 @@ spinBtn.addEventListener("click", () => {   // Quando o botão "Girar a Roleta" 
 
   spinning = true;             // Marca que a roleta está girando
   questionAnswered = false;    // Marca que ainda não tem pergunta respondida nessa rodada
+  spinBtn.disabled = true;     // Desabilita o botão já no início do giro, não só depois que a pergunta aparece
 
   const numSegments = questions.length;    // Conta quantos segmentos (perguntas) ainda existem
   const randomSpin = Math.floor(Math.random() * 360) + 720;  
