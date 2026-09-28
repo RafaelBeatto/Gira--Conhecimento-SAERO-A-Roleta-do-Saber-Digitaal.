@@ -792,6 +792,35 @@ canvas#wheel-v2 {
 /* ==========================================================================
    CONQUISTAS
    ========================================================================== */
+.achievements-progress {
+  width: 100%;
+  max-width: 480px;
+  margin: 8px 0 4px;
+}
+
+.achievements-progress-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+}
+
+.achievements-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f39c12, #f1c40f);
+  transition: width 0.6s ease;
+}
+
+.achievements-progress span {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
 .achievements-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -801,24 +830,52 @@ canvas#wheel-v2 {
 }
 
 .achievement-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   background: var(--card-bg);
   border-radius: 14px;
   padding: 14px 16px;
   text-align: left;
   box-shadow: 0 5px 14px var(--card-shadow);
-  opacity: 0.55;
-  filter: grayscale(0.6);
+  border: 1px solid transparent;
+  transition: transform 0.15s ease;
+}
+
+.achievement-card.locked {
+  opacity: 0.6;
+  filter: grayscale(0.7);
 }
 
 .achievement-card.unlocked {
-  opacity: 1;
-  filter: none;
-  border: 1px solid rgba(255, 215, 0, 0.6);
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 5px 18px rgba(255, 215, 0, 0.28);
 }
 
-.achievement-card .ach-emoji { font-size: 1.8rem; }
-.achievement-card h4 { margin: 6px 0 4px; }
-.achievement-card p { margin: 0; font-size: 13px; color: var(--text-muted); }
+.achievement-card.unlocked:hover { transform: translateY(-3px); }
+
+.ach-badge {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.achievement-card.unlocked .ach-badge {
+  background: linear-gradient(135deg, #f39c12, #f1c40f);
+  box-shadow: 0 3px 10px rgba(243, 156, 18, 0.5);
+}
+
+.ach-info { min-width: 0; }
+.ach-info h4 { margin: 0 0 4px; }
+.ach-info p { margin: 0; font-size: 13px; color: var(--text-muted); }
+.ach-date { margin-top: 5px !important; font-size: 11px !important; color: var(--accent) !important; font-weight: 700; }
+.ach-locked-tag { margin-top: 5px !important; font-size: 11px !important; font-weight: 700; }
 
 /* ==========================================================================
    ESTATÍSTICAS

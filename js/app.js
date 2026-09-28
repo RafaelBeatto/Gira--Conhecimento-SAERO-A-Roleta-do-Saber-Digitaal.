@@ -42,16 +42,28 @@ const App = (() => {
   function renderAchievementsScreen() {
     const list = getAllAchievementsWithStatus();
     const grid = document.getElementById("achievements-grid");
+    const unlockedCount = list.filter(a => a.desbloqueada).length;
+
+    document.getElementById("achievements-progress-fill").style.width = `${(unlockedCount / list.length) * 100}%`;
+    document.getElementById("achievements-progress-text").textContent = `${unlockedCount}/${list.length} desbloqueadas`;
+
     grid.innerHTML = list
-      .map(
-        a => `
-        <div class="achievement-card ${a.desbloqueada ? "unlocked" : ""}">
-          <span class="ach-emoji">${a.emoji}</span>
-          <h4>${a.nome}</h4>
-          <p>${a.descricao}</p>
-          <p style="opacity:.7;font-size:11px;margin-top:6px;">${a.desbloqueada ? "✅ Desbloqueada" : "🔒 Bloqueada"}</p>
-        </div>`
-      )
+      .map(a => {
+        const dataFormatada = a.desbloqueadaEm ? new Date(a.desbloqueadaEm).toLocaleDateString("pt-BR") : null;
+        return `
+        <div class="achievement-card ${a.desbloqueada ? "unlocked" : "locked"}">
+          <span class="ach-badge">${a.desbloqueada ? a.emoji : "🔒"}</span>
+          <div class="ach-info">
+            <h4>${a.nome}</h4>
+            <p>${a.descricao}</p>
+            ${
+              a.desbloqueada
+                ? `<p class="ach-date">✅ Desbloqueada em ${dataFormatada}</p>`
+                : `<p class="ach-locked-tag">🔒 Bloqueada</p>`
+            }
+          </div>
+        </div>`;
+      })
       .join("");
   }
 
