@@ -24,6 +24,9 @@ const App = (() => {
     const stats = Storage.getStats();
     document.getElementById("home-best-score").textContent = stats.maiorPontuacao;
     document.getElementById("home-best-combo").textContent = stats.maiorCombo;
+
+    const unlockedCount = Object.keys(Storage.getAchievements()).length;
+    document.getElementById("home-achievements-count").textContent = `${unlockedCount}/${ACHIEVEMENTS.length}`;
   }
 
   function applyTheme() {
