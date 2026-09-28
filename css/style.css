@@ -1058,12 +1058,16 @@ canvas#wheel-v2 {
   font-weight: 800;
   box-shadow: 0 8px 20px rgba(0,0,0,0.35);
   z-index: 999;
-  transition: transform 0.4s ease;
+  transition: transform 0.4s ease, opacity 0.4s ease, visibility 0.4s;
   max-width: 90vw;
+  opacity: 0;
+  visibility: hidden;
 }
 
 .achievement-toast.show {
   transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  visibility: visible;
 }
 
 /* ==========================================================================
@@ -1117,10 +1121,12 @@ canvas#wheel:hover {
   padding: 8px 22px;
   border-radius: 999px;
   background: var(--card-bg);
+  border: 2px solid var(--turn-color, transparent);
   font-size: 17px;
   font-weight: 800;
   box-shadow: 0 4px 12px var(--card-shadow);
   user-select: none;
+  transition: border-color 0.3s ease;
 }
 #turn-indicator:empty { display: none; padding: 0; box-shadow: none; margin-top: 0; }
 

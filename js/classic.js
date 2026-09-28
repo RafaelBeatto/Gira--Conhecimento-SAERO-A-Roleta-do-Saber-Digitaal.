@@ -19,7 +19,7 @@ const groups = [  // Cria um array com todos os grupos do jogo
 
 
 let currentGroupIndex = 0;  // Define que o primeiro grupo da vez é o grupo de índice 0 (Grupo Azul)  
-turmaScreenEl.style.background = groups[currentGroupIndex].color;  // Muda a cor de fundo da página para a cor do grupo atual
+turmaScreenEl.style.setProperty("--turn-color", groups[currentGroupIndex].color); // Cor do grupo da vez (usada no destaque do indicador de turno)
 
 
   const questions = [
@@ -1019,7 +1019,7 @@ nextBtn.addEventListener("click", () => {                 // Quando o botão "Pr
   if (questions.length === 0) return; // Não faz nada se acabou  // Se não houver mais perguntas, sai da função e não faz nada
 
   currentGroupIndex = (currentGroupIndex + 1) % groups.length;  // Passa a vez para o próximo grupo (volta ao primeiro se chegar no último)
-  turmaScreenEl.style.background = groups[currentGroupIndex].color; // Muda a cor de fundo da página para a cor do grupo atual
+  turmaScreenEl.style.setProperty("--turn-color", groups[currentGroupIndex].color); // Cor do grupo da vez (usada no destaque do indicador de turno)
   selectedQuestionEl.innerHTML = "";  // Limpa a área da pergunta na tela
   messageEl.textContent = "";         // Limpa a mensagem de acerto/erro
   nextBtn.style.display = "none";     // Esconde o botão "Próxima Pergunta"
@@ -1169,7 +1169,7 @@ function showFinalScoreboard() {
 function restartGame() {
   groups.forEach(g => g.score = 0);         // Zera a pontuação de todos os grupos
   currentGroupIndex = 0;                    // Volta para o primeiro grupo
-  turmaScreenEl.style.background = groups[currentGroupIndex].color; // Restaura a cor de fundo inicial
+  turmaScreenEl.style.setProperty("--turn-color", groups[currentGroupIndex].color); // Cor do grupo da vez (usada no destaque do indicador de turno)
 
   questions.length = 0;                     // Esvazia a lista de perguntas atual
   questionsBackup.forEach(q => questions.push({ ...q, opcoes: [...q.opcoes] })); // Repõe todas as perguntas originais
