@@ -764,6 +764,102 @@ Estado de Minas, 25 de abril de 2005.
     resposta: 0,
     explicacao: "A Cordilheira dos Andes é a maior cadeia de montanhas do mundo em extensão."
   },
+  {
+    categoria: "Geografia",
+    dificuldade: "facil",
+    pergunta: "Qual é o maior país do mundo em área territorial?",
+    alternativas: ["Canadá", "China", "Rússia", "Estados Unidos"],
+    resposta: 2,
+    explicacao: "A Rússia é o maior país do mundo, com cerca de 17 milhões de km²."
+  },
+  {
+    categoria: "Geografia",
+    dificuldade: "facil",
+    pergunta: "Qual é a montanha mais alta do mundo?",
+    alternativas: ["K2", "Monte Everest", "Aconcágua", "Kilimanjaro"],
+    resposta: 1,
+    explicacao: "O Monte Everest, no Himalaia, tem cerca de 8.849 metros de altitude, a maior do mundo."
+  },
+  {
+    categoria: "Geografia",
+    dificuldade: "facil",
+    pergunta: "Qual oceano banha todo o litoral brasileiro?",
+    alternativas: ["Pacífico", "Índico", "Atlântico", "Ártico"],
+    resposta: 2,
+    explicacao: "O Oceano Atlântico banha toda a costa do Brasil."
+  },
+  {
+    categoria: "Geografia",
+    dificuldade: "facil",
+    pergunta: "Quantos estados tem o Brasil, além do Distrito Federal?",
+    alternativas: ["23", "24", "26", "27"],
+    resposta: 2,
+    explicacao: "O Brasil é dividido em 26 estados, mais o Distrito Federal."
+  },
+  {
+    categoria: "Geografia",
+    dificuldade: "medio",
+    pergunta: "Qual é a cidade mais populosa do Brasil?",
+    alternativas: ["Rio de Janeiro", "São Paulo", "Brasília", "Salvador"],
+    resposta: 1,
+    explicacao: "São Paulo é a cidade mais populosa do Brasil e da América do Sul."
+  },
+  {
+    categoria: "Geografia",
+    dificuldade: "medio",
+    pergunta: "Qual região brasileira tem o maior número de estados?",
+    alternativas: ["Norte", "Nordeste", "Sudeste", "Sul"],
+    resposta: 1,
+    explicacao: "A região Nordeste é formada por 9 estados, o maior número entre as regiões brasileiras."
+  },
+  {
+    categoria: "Geografia",
+    dificuldade: "medio",
+    pergunta: "Qual é o deserto mais árido do mundo?",
+    alternativas: ["Saara", "Atacama", "Gobi", "Kalahari"],
+    resposta: 1,
+    explicacao: "O Deserto do Atacama, no Chile, é considerado o mais árido do mundo."
+  },
+  {
+    categoria: "Geografia",
+    dificuldade: "medio",
+    pergunta: "Qual é o rio mais extenso da Europa?",
+    alternativas: ["Reno", "Danúbio", "Volga", "Sena"],
+    resposta: 2,
+    explicacao: "O Rio Volga, na Rússia, é o rio mais extenso da Europa."
+  },
+  {
+    categoria: "Geografia",
+    dificuldade: "dificil",
+    pergunta: "Qual país é considerado transcontinental, com território na Europa e na Ásia?",
+    alternativas: ["Egito", "Turquia", "México", "Marrocos"],
+    resposta: 1,
+    explicacao: "A Turquia tem parte do território na Europa e parte na Ásia, separadas pelo Estreito de Bósforo."
+  },
+  {
+    categoria: "Geografia",
+    dificuldade: "dificil",
+    pergunta: "Qual é a capital da Austrália?",
+    alternativas: ["Sydney", "Melbourne", "Camberra", "Perth"],
+    resposta: 2,
+    explicacao: "Apesar de Sydney ser mais famosa, a capital da Austrália é Camberra."
+  },
+  {
+    categoria: "Geografia",
+    dificuldade: "dificil",
+    pergunta: "Qual estreito separa a Europa da África no ponto mais próximo entre os dois continentes?",
+    alternativas: ["Estreito de Bering", "Estreito de Gibraltar", "Estreito de Bósforo", "Estreito de Ormuz"],
+    resposta: 1,
+    explicacao: "O Estreito de Gibraltar, entre Espanha e Marrocos, é o ponto mais próximo entre Europa e África."
+  },
+  {
+    categoria: "Geografia",
+    dificuldade: "dificil",
+    pergunta: "Como se chama o fenômeno climático de aquecimento anormal das águas do Oceano Pacífico que afeta o clima mundial?",
+    alternativas: ["La Niña", "El Niño", "Monção", "Furacão"],
+    resposta: 1,
+    explicacao: "O El Niño é o aquecimento anormal das águas do Pacífico que altera padrões climáticos em todo o mundo."
+  },
 
   // ===================== CIÊNCIAS (novas) =====================
   {
@@ -813,6 +909,102 @@ Estado de Minas, 25 de abril de 2005.
     alternativas: ["Força nuclear", "Força eletromagnética", "Gravidade", "Força de atrito"],
     resposta: 2,
     explicacao: "A gravidade é a força de atração entre massas que mantém os planetas em órbita ao redor do Sol."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "facil",
+    pergunta: "Qual é o ponto de ebulição da água ao nível do mar?",
+    alternativas: ["0°C", "50°C", "100°C", "150°C"],
+    resposta: 2,
+    explicacao: "Ao nível do mar, a água ferve a 100°C."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "facil",
+    pergunta: "Qual planeta é conhecido como o 'planeta vermelho'?",
+    alternativas: ["Vênus", "Marte", "Júpiter", "Saturno"],
+    resposta: 1,
+    explicacao: "Marte é chamado de planeta vermelho por causa do óxido de ferro (ferrugem) em sua superfície."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "facil",
+    pergunta: "Qual órgão é responsável por filtrar o sangue e produzir a urina?",
+    alternativas: ["Fígado", "Rim", "Pâncreas", "Baço"],
+    resposta: 1,
+    explicacao: "Os rins filtram o sangue e produzem a urina, eliminando substâncias que o corpo não precisa."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "facil",
+    pergunta: "Qual gás as plantas liberam durante a fotossíntese?",
+    alternativas: ["Gás carbônico", "Oxigênio", "Nitrogênio", "Hidrogênio"],
+    resposta: 1,
+    explicacao: "Na fotossíntese, as plantas absorvem CO2 e liberam oxigênio como subproduto."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "medio",
+    pergunta: "Qual é o maior planeta do Sistema Solar?",
+    alternativas: ["Saturno", "Júpiter", "Urano", "Netuno"],
+    resposta: 1,
+    explicacao: "Júpiter é o maior planeta do Sistema Solar, com massa maior que a de todos os outros planetas somados."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "medio",
+    pergunta: "Qual é o processo de divisão celular que forma as células reprodutivas (gametas)?",
+    alternativas: ["Mitose", "Meiose", "Osmose", "Fermentação"],
+    resposta: 1,
+    explicacao: "A meiose é o processo que forma gametas com metade do número de cromossomos da célula original."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "medio",
+    pergunta: "Qual vitamina o corpo humano produz a partir da exposição ao sol?",
+    alternativas: ["Vitamina A", "Vitamina C", "Vitamina D", "Vitamina K"],
+    resposta: 2,
+    explicacao: "A exposição à luz solar estimula a produção de vitamina D pela pele."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "medio",
+    pergunta: "Qual escala é usada para medir a intensidade de terremotos?",
+    alternativas: ["Escala Kelvin", "Escala Richter", "Escala Beaufort", "Escala Celsius"],
+    resposta: 1,
+    explicacao: "A Escala Richter mede a magnitude (intensidade) dos terremotos."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "dificil",
+    pergunta: "Qual molécula carrega a informação genética dos seres vivos?",
+    alternativas: ["Proteína", "RNA", "DNA", "Lipídio"],
+    resposta: 2,
+    explicacao: "O DNA (ácido desoxirribonucleico) armazena as informações genéticas dos seres vivos."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "dificil",
+    pergunta: "Qual cientista formulou as leis do movimento e a lei da gravitação universal?",
+    alternativas: ["Albert Einstein", "Isaac Newton", "Galileu Galilei", "Nikola Tesla"],
+    resposta: 1,
+    explicacao: "Isaac Newton formulou as três leis do movimento e a lei da gravitação universal no século XVII."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "dificil",
+    pergunta: "Como se chama o processo pelo qual as células obtêm energia quebrando glicose na presença de oxigênio?",
+    alternativas: ["Fotossíntese", "Fermentação", "Respiração celular", "Osmose"],
+    resposta: 2,
+    explicacao: "A respiração celular usa oxigênio para quebrar glicose e liberar energia para a célula."
+  },
+  {
+    categoria: "Ciências",
+    dificuldade: "dificil",
+    pergunta: "Qual partícula subatômica tem carga elétrica negativa?",
+    alternativas: ["Próton", "Nêutron", "Elétron", "Fóton"],
+    resposta: 2,
+    explicacao: "O elétron é a partícula subatômica de carga negativa que orbita o núcleo do átomo."
   },
 
   // ===================== HISTÓRIA (novas) =====================
@@ -864,6 +1056,102 @@ Estado de Minas, 25 de abril de 2005.
     resposta: 1,
     explicacao: "O Renascimento foi um movimento cultural que resgatou valores humanistas e científicos da Antiguidade Clássica."
   },
+  {
+    categoria: "História",
+    dificuldade: "facil",
+    pergunta: "Quem foi o navegador que comandou a esquadra que chegou ao Brasil em 1500?",
+    alternativas: ["Cristóvão Colombo", "Pedro Álvares Cabral", "Vasco da Gama", "Fernão de Magalhães"],
+    resposta: 1,
+    explicacao: "Pedro Álvares Cabral comandou a esquadra portuguesa que chegou ao Brasil em 1500."
+  },
+  {
+    categoria: "História",
+    dificuldade: "facil",
+    pergunta: "Em que dia é comemorada a Independência do Brasil?",
+    alternativas: ["15 de novembro", "7 de setembro", "13 de maio", "21 de abril"],
+    resposta: 1,
+    explicacao: "A Independência do Brasil, proclamada por Dom Pedro I em 1822, é comemorada em 7 de setembro."
+  },
+  {
+    categoria: "História",
+    dificuldade: "facil",
+    pergunta: "Qual civilização antiga construiu as pirâmides de Gizé?",
+    alternativas: ["Romanos", "Gregos", "Egípcios", "Maias"],
+    resposta: 2,
+    explicacao: "As pirâmides de Gizé foram construídas pelos antigos egípcios."
+  },
+  {
+    categoria: "História",
+    dificuldade: "facil",
+    pergunta: "Quem foi a primeira mulher eleita presidente do Brasil?",
+    alternativas: ["Marina Silva", "Dilma Rousseff", "Luiza Erundina", "Benedita da Silva"],
+    resposta: 1,
+    explicacao: "Dilma Rousseff foi eleita em 2010, tornando-se a primeira mulher presidente do Brasil."
+  },
+  {
+    categoria: "História",
+    dificuldade: "medio",
+    pergunta: "Em que século ocorreu a maioria dos movimentos de independência dos países latino-americanos?",
+    alternativas: ["Século XVII", "Século XVIII", "Século XIX", "Século XX"],
+    resposta: 2,
+    explicacao: "A maioria das independências latino-americanas, incluindo a do Brasil, ocorreu no século XIX."
+  },
+  {
+    categoria: "História",
+    dificuldade: "medio",
+    pergunta: "Como ficou conhecido o período de governo militar no Brasil entre 1964 e 1985?",
+    alternativas: ["Estado Novo", "Ditadura Militar", "República Velha", "Era Vargas"],
+    resposta: 1,
+    explicacao: "Esse período, com presidentes militares no poder, é conhecido como Ditadura Militar."
+  },
+  {
+    categoria: "História",
+    dificuldade: "medio",
+    pergunta: "Quem foi o líder da Revolução Francesa que depois se tornou imperador?",
+    alternativas: ["Luís XVI", "Napoleão Bonaparte", "Robespierre", "Luís XIV"],
+    resposta: 1,
+    explicacao: "Napoleão Bonaparte ascendeu durante a Revolução Francesa e depois se coroou imperador em 1804."
+  },
+  {
+    categoria: "História",
+    dificuldade: "medio",
+    pergunta: "Qual tratado dividiu as terras recém-descobertas entre Portugal e Espanha em 1494?",
+    alternativas: ["Tratado de Utrecht", "Tratado de Tordesilhas", "Tratado de Versalhes", "Tratado de Madri"],
+    resposta: 1,
+    explicacao: "O Tratado de Tordesilhas, assinado em 1494, dividiu as terras do Novo Mundo entre Portugal e Espanha."
+  },
+  {
+    categoria: "História",
+    dificuldade: "dificil",
+    pergunta: "Em que ano foi promulgada a atual Constituição Federal brasileira, conhecida como 'Constituição Cidadã'?",
+    alternativas: ["1946", "1967", "1988", "1994"],
+    resposta: 2,
+    explicacao: "A Constituição de 1988, chamada de 'Constituição Cidadã', está em vigor até hoje."
+  },
+  {
+    categoria: "História",
+    dificuldade: "dificil",
+    pergunta: "Quais foram as duas superpotências que protagonizaram a Guerra Fria?",
+    alternativas: ["Estados Unidos e China", "Estados Unidos e União Soviética", "Reino Unido e Alemanha", "França e Rússia"],
+    resposta: 1,
+    explicacao: "A Guerra Fria foi a disputa política e ideológica entre Estados Unidos e União Soviética após a Segunda Guerra Mundial."
+  },
+  {
+    categoria: "História",
+    dificuldade: "dificil",
+    pergunta: "Qual tratado estabeleceu o fim oficial da Primeira Guerra Mundial?",
+    alternativas: ["Tratado de Tordesilhas", "Tratado de Versalhes", "Tratado de Paris", "Congresso de Viena"],
+    resposta: 1,
+    explicacao: "O Tratado de Versalhes, assinado em 1919, oficializou o fim da Primeira Guerra Mundial."
+  },
+  {
+    categoria: "História",
+    dificuldade: "dificil",
+    pergunta: "Qual imperador romano assinou o Edito de Milão, garantindo liberdade religiosa ao cristianismo?",
+    alternativas: ["Nero", "Constantino", "Júlio César", "Augusto"],
+    resposta: 1,
+    explicacao: "O imperador Constantino assinou o Edito de Milão em 313 d.C., permitindo a liberdade de culto ao cristianismo."
+  },
 
   // ===================== CONHECIMENTOS GERAIS (novas) =====================
   {
@@ -913,5 +1201,101 @@ Estado de Minas, 25 de abril de 2005.
     alternativas: ["Mônaco", "San Marino", "Vaticano", "Liechtenstein"],
     resposta: 2,
     explicacao: "O Vaticano é o menor país do mundo, com cerca de 0,44 km² de área."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "facil",
+    pergunta: "Quantos dias tem uma semana?",
+    alternativas: ["5", "6", "7", "8"],
+    resposta: 2,
+    explicacao: "Uma semana tem 7 dias."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "facil",
+    pergunta: "Qual é a capital da França?",
+    alternativas: ["Londres", "Paris", "Roma", "Madri"],
+    resposta: 1,
+    explicacao: "Paris é a capital da França."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "facil",
+    pergunta: "Quantas cores tem o arco-íris, segundo a divisão tradicional?",
+    alternativas: ["5", "6", "7", "8"],
+    resposta: 2,
+    explicacao: "O arco-íris é tradicionalmente dividido em 7 cores: vermelho, laranja, amarelo, verde, azul, anil e violeta."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "facil",
+    pergunta: "Qual é o maior animal terrestre do mundo?",
+    alternativas: ["Rinoceronte", "Elefante africano", "Girafa", "Hipopótamo"],
+    resposta: 1,
+    explicacao: "O elefante africano é o maior animal terrestre da atualidade."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "medio",
+    pergunta: "Quantos minutos dura uma partida oficial de futebol, sem prorrogação?",
+    alternativas: ["60", "80", "90", "120"],
+    resposta: 2,
+    explicacao: "Uma partida oficial de futebol tem 90 minutos, divididos em dois tempos de 45."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "medio",
+    pergunta: "Qual é o idioma mais falado no mundo como língua materna?",
+    alternativas: ["Inglês", "Espanhol", "Mandarim", "Hindi"],
+    resposta: 2,
+    explicacao: "O mandarim (chinês) é o idioma com mais falantes nativos no mundo."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "medio",
+    pergunta: "Qual metal é líquido à temperatura ambiente?",
+    alternativas: ["Ferro", "Mercúrio", "Chumbo", "Alumínio"],
+    resposta: 1,
+    explicacao: "O mercúrio é o único metal que se mantém líquido à temperatura ambiente."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "medio",
+    pergunta: "Quantos jogadores de uma equipe de vôlei ficam em quadra?",
+    alternativas: ["5", "6", "7", "9"],
+    resposta: 1,
+    explicacao: "Cada equipe de vôlei tem 6 jogadores em quadra."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "dificil",
+    pergunta: "Qual é o oceano mais profundo do mundo?",
+    alternativas: ["Atlântico", "Índico", "Pacífico", "Ártico"],
+    resposta: 2,
+    explicacao: "O Oceano Pacífico é o mais profundo, abrigando a Fossa das Marianas, o ponto mais fundo da Terra."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "dificil",
+    pergunta: "Quantos ossos tem a coluna vertebral humana?",
+    alternativas: ["24", "26", "33", "40"],
+    resposta: 2,
+    explicacao: "A coluna vertebral humana é formada por 33 vértebras (algumas se fundem na fase adulta)."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "dificil",
+    pergunta: "Qual é, aproximadamente, a velocidade da luz no vácuo?",
+    alternativas: ["3.000 km/s", "30.000 km/s", "300.000 km/s", "3.000.000 km/s"],
+    resposta: 2,
+    explicacao: "A luz viaja no vácuo a aproximadamente 300.000 km por segundo."
+  },
+  {
+    categoria: "Conhecimentos Gerais",
+    dificuldade: "dificil",
+    pergunta: "Qual é o maior deserto do mundo, contando os desertos frios?",
+    alternativas: ["Saara", "Gobi", "Antártida", "Atacama"],
+    resposta: 2,
+    explicacao: "Considerando desertos frios (áreas de baixa precipitação), a Antártida é o maior deserto do mundo."
   }
 ];
