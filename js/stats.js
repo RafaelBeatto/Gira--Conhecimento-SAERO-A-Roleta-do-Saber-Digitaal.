@@ -9,6 +9,17 @@ const StatsScreen = (() => {
   function render() {
     const stats = Storage.getStats();
     const grid = document.getElementById("stats-grid");
+    const emptyEl = document.getElementById("stats-empty");
+    const chartCardEl = document.getElementById("chart-card");
+
+    if (stats.perguntasRespondidas === 0) {
+      emptyEl.style.display = "block";
+      grid.style.display = "none";
+      chartCardEl.style.display = "none";
+      return;
+    }
+    emptyEl.style.display = "none";
+    grid.style.display = "";
 
     const aproveitamento =
       stats.perguntasRespondidas > 0 ? ((stats.acertos / stats.perguntasRespondidas) * 100).toFixed(1) : "0.0";
@@ -16,18 +27,25 @@ const StatsScreen = (() => {
       stats.respostasComTempo > 0 ? (stats.somaTempoResposta / stats.respostasComTempo).toFixed(1) : "0.0";
 
     const tiles = [
-      { label: "Partidas", value: stats.partidas },
-      { label: "Perguntas", value: stats.perguntasRespondidas },
-      { label: "Acertos", value: stats.acertos },
-      { label: "Erros", value: stats.erros },
-      { label: "Aproveitamento", value: aproveitamento + "%" },
-      { label: "Maior combo", value: stats.maiorCombo },
-      { label: "Melhor pontuação", value: stats.maiorPontuacao },
-      { label: "Tempo médio", value: tempoMedio + "s" }
+      { icon: "🎮", label: "Partidas", value: stats.partidas, cls: "c-blue" },
+      { icon: "❓", label: "Perguntas", value: stats.perguntasRespondidas, cls: "c-purple" },
+      { icon: "🎯", label: "Acertos", value: stats.acertos, cls: "c-green" },
+      { icon: "❌", label: "Erros", value: stats.erros, cls: "c-red" },
+      { icon: "📈", label: "Aproveitamento", value: aproveitamento + "%", cls: "c-gold" },
+      { icon: "🔥", label: "Maior combo", value: stats.maiorCombo, cls: "c-orange" },
+      { icon: "🏆", label: "Melhor pontuação", value: stats.maiorPontuacao, cls: "c-gold" },
+      { icon: "⏱️", label: "Tempo médio", value: tempoMedio + "s", cls: "c-blue" }
     ];
 
     grid.innerHTML = tiles
-      .map(t => `<div class="stat-tile"><div class="stat-value">${t.value}</div><div class="stat-label">${t.label}</div></div>`)
+      .map(
+        t => `
+      <div class="stat-tile ${t.cls}">
+        <span class="stat-icon">${t.icon}</span>
+        <div class="stat-value">${t.value}</div>
+        <div class="stat-label">${t.label}</div>
+      </div>`
+      )
       .join("");
 
     renderChart(stats);
@@ -35,14 +53,23 @@ const StatsScreen = (() => {
 
   function renderChart(stats) {
     const canvas = document.getElementById("chart-categorias");
+    const cardEl = document.getElementById("chart-card");
     if (!canvas) return;
 
     const categorias = Object.keys(stats.categorias);
-    if (categorias.length === 0 || typeof Chart === "undefined") {
+    if (categorias.length === 0) {
+      cardEl.style.display = "none";
+      return;
+    }
+    cardEl.style.display = "";
+
+    if (typeof Chart === "undefined") {
       canvas.style.display = "none";
+      showChartFallback(cardEl);
       return;
     }
     canvas.style.display = "";
+    hideChartFallback();
 
     const data = categorias.map(c => {
       const s = stats.categorias[c];
@@ -74,6 +101,23 @@ const StatsScreen = (() => {
         plugins: { legend: { display: false } }
       }
     });
+  }
+
+  function showChartFallback(cardEl) {
+    let fallback = document.getElementById("chart-fallback");
+    if (!fallback) {
+      fallback = document.createElement("p");
+      fallback.id = "chart-fallback";
+      fallback.className = "chart-fallback";
+      fallback.textContent = "📉 Gráfico indisponível no momento. Conecte-se à internet e volte a esta tela.";
+      cardEl.appendChild(fallback);
+    }
+    fallback.style.display = "block";
+  }
+
+  function hideChartFallback() {
+    const fallback = document.getElementById("chart-fallback");
+    if (fallback) fallback.style.display = "none";
   }
 
   return { render };
