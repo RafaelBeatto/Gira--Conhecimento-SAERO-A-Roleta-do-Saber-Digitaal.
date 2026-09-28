@@ -393,26 +393,51 @@ const SoloGame = (() => {
       ? (temposPartida.reduce((a, b) => a + b, 0) / temposPartida.length).toFixed(1)
       : "0.0";
 
+    const stats = [
+      { icon: "🎯", value: acertos, label: "Acertos" },
+      { icon: "❌", value: erros, label: "Erros" },
+      { icon: "🔥", value: comboMax, label: "Combo máx." },
+      { icon: "⏱️", value: tempoMedio + "s", label: "Tempo médio" },
+      { icon: "📈", value: aproveitamento + "%", label: "Aproveitamento" },
+      { icon: "❤️", value: vidas === Infinity ? "—" : Math.max(0, vidas), label: "Vidas restantes" }
+    ];
+
     let html = `
-      <div class="result-score">${pontuacao} PONTOS</div>
+      <div class="result-score-wrap">
+        <span class="result-score">${pontuacao}</span>
+        <span class="result-score-label">pontos</span>
+      </div>
       <div class="result-grid">
-        <div>🎯 Acertos: <strong>${acertos}</strong></div>
-        <div>❌ Erros: <strong>${erros}</strong></div>
-        <div>🔥 Combo máximo: <strong>${comboMax}</strong></div>
-        <div>⏱️ Tempo médio: <strong>${tempoMedio}s</strong></div>
-        <div>📈 Aproveitamento: <strong>${aproveitamento}%</strong></div>
-        <div>❤️ Vidas restantes: <strong>${vidas === Infinity ? "—" : Math.max(0, vidas)}</strong></div>
+        ${stats
+          .map(
+            s => `
+          <div class="result-stat">
+            <span class="result-stat-icon">${s.icon}</span>
+            <span class="result-stat-value">${s.value}</span>
+            <span class="result-stat-label">${s.label}</span>
+          </div>`
+          )
+          .join("")}
       </div>`;
 
     if (newAchievementsThisGame.length) {
-      html += `<div class="new-achievement-list"><strong>🏆 Novas conquistas:</strong>`;
+      html += `<div class="new-achievement-list"><strong>🏆 Novas conquistas</strong>`;
       newAchievementsThisGame.forEach(a => {
-        html += `<div class="new-achievement-item">${a.emoji} ${a.nome} — ${a.descricao}</div>`;
+        html += `
+          <div class="new-achievement-item">
+            <span class="new-achievement-emoji">${a.emoji}</span>
+            <div>
+              <div class="new-achievement-name">${a.nome}</div>
+              <div class="new-achievement-desc">${a.descricao}</div>
+            </div>
+          </div>`;
       });
       html += `</div>`;
     }
 
-    document.getElementById("solo-result-card").innerHTML = html;
+    const resultCardEl = document.getElementById("solo-result-card");
+    resultCardEl.className = "result-card " + (gameOver ? "gameover" : "victory");
+    resultCardEl.innerHTML = html;
     document.getElementById("solo-result-title").textContent = gameOver ? "💀 GAME OVER" : "🎉 FIM DE JOGO!";
   }
 

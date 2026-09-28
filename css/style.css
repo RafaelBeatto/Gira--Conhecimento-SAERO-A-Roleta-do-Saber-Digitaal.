@@ -700,48 +700,94 @@ canvas#wheel-v2 {
 .result-card {
   background: var(--card-bg);
   border-radius: 18px;
-  padding: 26px 24px;
+  padding: 28px 24px 24px;
   max-width: 480px;
   width: 100%;
   box-shadow: 0 10px 26px var(--card-shadow);
+  border: 2px solid transparent;
+}
+
+.result-card.victory { border-color: rgba(255, 215, 0, 0.55); }
+.result-card.gameover { border-color: rgba(231, 76, 60, 0.55); }
+
+.result-score-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 6px;
 }
 
 .result-score {
-  font-size: 2.6rem;
+  font-size: 3rem;
   font-weight: 900;
-  margin: 6px 0 14px;
   color: var(--accent);
   text-shadow: 2px 2px 6px rgba(0,0,0,0.35);
+  line-height: 1;
+  animation: resultScorePop 0.5s ease;
+}
+
+@keyframes resultScorePop {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.result-score-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-top: 2px;
 }
 
 .result-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
-  text-align: left;
-  font-size: 15px;
-  margin: 14px 0;
+  margin: 16px 0;
 }
 
-.result-grid div {
+.result-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   background: rgba(255,255,255,0.1);
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 10px 6px;
+  border-radius: 12px;
+}
+
+.result-stat-icon { font-size: 17px; }
+.result-stat-value { font-size: 17px; font-weight: 900; }
+.result-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-align: center;
 }
 
 .new-achievement-list {
-  margin-top: 14px;
+  margin-top: 16px;
   text-align: left;
 }
 
 .new-achievement-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: rgba(255, 215, 0, 0.2);
   border: 1px solid rgba(255, 215, 0, 0.5);
-  border-radius: 10px;
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  font-weight: 700;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-top: 8px;
 }
+
+.new-achievement-emoji { font-size: 22px; flex-shrink: 0; }
+.new-achievement-name { font-weight: 800; }
+.new-achievement-desc { font-size: 12px; color: var(--text-muted); }
 
 /* ==========================================================================
    CONQUISTAS
@@ -1109,6 +1155,7 @@ canvas#wheel:hover {
   .alt-btn { font-size: 15px; padding: 12px; }
   .hud-chip { min-width: 76px; font-size: 13px; padding: 6px 10px; }
   .result-score { font-size: 2.1rem; }
+  .result-grid { grid-template-columns: 1fr 1fr; }
   .mode-card { width: 100%; }
 
   .home-wheel-deco { width: 64px; height: 64px; margin: 14px auto 2px; }
