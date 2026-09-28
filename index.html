@@ -142,15 +142,30 @@
   <button class="topbar-btn" id="btn-solo-home-top" style="align-self:flex-start; margin: 10px 0 0 6px;">⬅ Início</button>
 
   <div class="hud">
-    <div class="hud-chip" id="solo-lives"><span class="hud-label">Vidas</span><span id="solo-lives-text">❤️❤️❤️</span></div>
-    <div class="hud-chip" id="solo-combo"><span class="hud-label">Combo</span><span id="solo-combo-text" class="combo-flames">—</span></div>
-    <div class="hud-chip timer-wrap" id="solo-timer-wrap">
+    <div class="hud-chip hud-lives" id="solo-lives">
+      <span class="hud-icon">❤️</span>
+      <span id="solo-lives-text" class="hud-value">❤️❤️❤️</span>
+      <span class="hud-label">Vidas</span>
+    </div>
+    <div class="hud-chip hud-combo" id="solo-combo">
+      <span class="hud-icon">🔥</span>
+      <span id="solo-combo-text" class="hud-value combo-flames">—</span>
+      <span class="hud-label">Combo</span>
+    </div>
+    <div class="hud-chip hud-timer timer-wrap" id="solo-timer-wrap">
+      <span class="hud-icon">⏱️</span>
+      <span id="solo-timer-text" class="hud-value">15s</span>
       <span class="hud-label">Tempo</span>
-      <span id="solo-timer-text">15s</span>
       <div class="timer-bar-track"><div class="timer-bar-fill" id="solo-timer-fill"></div></div>
     </div>
-    <div class="hud-chip"><span class="hud-label">Pontos</span><span id="solo-score-text">0</span></div>
+    <div class="hud-chip hud-score">
+      <span class="hud-icon">⭐</span>
+      <span id="solo-score-text" class="hud-value">0</span>
+      <span class="hud-label">Pontos</span>
+    </div>
   </div>
+
+  <p class="wheel-hint">Gire para sortear a categoria da próxima pergunta</p>
 
   <div class="wheel-wrapper">
     <div class="pointer"></div>
