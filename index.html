@@ -17,19 +17,50 @@
      TELA: HOME
      ============================================================ -->
 <section id="screen-home" class="screen active">
+  <div class="home-wheel-deco" aria-hidden="true">
+    <div class="home-wheel-ring"></div>
+    <span class="home-wheel-emoji">🎯</span>
+  </div>
+
   <h1>Gira Conhecimento</h1>
   <p class="home-subtitle">A Roleta do Saber Digital</p>
 
-  <div class="home-menu">
-    <button id="btn-jogar-agora" class="home-btn primary">🎡 Jogar Agora</button>
-    <button id="btn-ver-desempenho" class="home-btn stats">📊 Meu Desempenho</button>
-    <button id="btn-conquistas" class="home-btn achievements">🏆 Conquistas</button>
-    <button id="btn-configuracoes" class="home-btn settings">⚙️ Configurações</button>
+  <div class="home-stats-strip">
+    <div class="home-stat">
+      <span class="home-stat-value" id="home-best-score">0</span>
+      <span class="home-stat-label">🏆 Melhor pontuação</span>
+    </div>
+    <div class="home-stat">
+      <span class="home-stat-value" id="home-best-combo">0</span>
+      <span class="home-stat-label">🔥 Maior combo</span>
+    </div>
+    <div class="home-stat">
+      <span class="home-stat-value" id="home-achievements-count">0/8</span>
+      <span class="home-stat-label">🥇 Conquistas</span>
+    </div>
   </div>
 
-  <div class="home-mini-stats">
-    <span>Melhor pontuação: <strong id="home-best-score">0</strong></span>
-    <span>Maior combo: <strong id="home-best-combo">0</strong> 🔥</span>
+  <div class="home-tiles">
+    <button id="btn-jogar-agora" class="home-tile primary">
+      <span class="home-tile-icon">🎡</span>
+      <span class="home-tile-title">Jogar Agora</span>
+      <span class="home-tile-desc">Modo Solo ou Turma</span>
+    </button>
+    <button id="btn-ver-desempenho" class="home-tile stats">
+      <span class="home-tile-icon">📊</span>
+      <span class="home-tile-title">Meu Desempenho</span>
+      <span class="home-tile-desc">Estatísticas e progresso</span>
+    </button>
+    <button id="btn-conquistas" class="home-tile achievements">
+      <span class="home-tile-icon">🏆</span>
+      <span class="home-tile-title">Conquistas</span>
+      <span class="home-tile-desc">Suas medalhas</span>
+    </button>
+    <button id="btn-configuracoes" class="home-tile settings">
+      <span class="home-tile-icon">⚙️</span>
+      <span class="home-tile-title">Configurações</span>
+      <span class="home-tile-desc">Som, tema e mais</span>
+    </button>
   </div>
 </section>
 
