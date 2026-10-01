@@ -1,4 +1,4 @@
-// Tela "📊 Meu Desempenho" — estatísticas cumulativas do Modo Solo,
+// Tela "Meu desempenho" — estatísticas cumulativas do Modo Solo,
 // lidas do LocalStorage (js/storage.js). Usa Chart.js (via CDN) quando
 // disponível; se o gráfico não puder carregar (ex.: offline sem cache),
 // os cartões numéricos continuam funcionando normalmente.
@@ -27,23 +27,22 @@ const StatsScreen = (() => {
       stats.respostasComTempo > 0 ? (stats.somaTempoResposta / stats.respostasComTempo).toFixed(1) : "0.0";
 
     const tiles = [
-      { icon: "🎮", label: "Partidas", value: stats.partidas, cls: "c-blue" },
-      { icon: "❓", label: "Perguntas", value: stats.perguntasRespondidas, cls: "c-purple" },
-      { icon: "🎯", label: "Acertos", value: stats.acertos, cls: "c-green" },
-      { icon: "❌", label: "Erros", value: stats.erros, cls: "c-red" },
-      { icon: "📈", label: "Aproveitamento", value: aproveitamento + "%", cls: "c-gold" },
-      { icon: "🔥", label: "Maior combo", value: stats.maiorCombo, cls: "c-orange" },
-      { icon: "🏆", label: "Melhor pontuação", value: stats.maiorPontuacao, cls: "c-gold" },
-      { icon: "⏱️", label: "Tempo médio", value: tempoMedio + "s", cls: "c-blue" }
+      { icon: "play", label: "Partidas", value: stats.partidas },
+      { icon: "list", label: "Perguntas", value: stats.perguntasRespondidas },
+      { icon: "check", label: "Acertos", value: stats.acertos },
+      { icon: "x", label: "Erros", value: stats.erros },
+      { icon: "percent", label: "Aproveitamento", value: aproveitamento + "%" },
+      { icon: "flame", label: "Maior combo", value: stats.maiorCombo },
+      { icon: "trophy", label: "Melhor pontuação", value: stats.maiorPontuacao },
+      { icon: "timer", label: "Tempo médio", value: tempoMedio + "s" }
     ];
 
     grid.innerHTML = tiles
       .map(
         t => `
-      <div class="stat-tile ${t.cls}">
-        <span class="stat-icon">${t.icon}</span>
+      <div class="stat-tile">
+        <div class="stat-label">${Icons.svg(t.icon)}${t.label}</div>
         <div class="stat-value">${t.value}</div>
-        <div class="stat-label">${t.label}</div>
       </div>`
       )
       .join("");
@@ -75,10 +74,10 @@ const StatsScreen = (() => {
       const s = stats.categorias[c];
       return s.total > 0 ? Math.round((s.acertos / s.total) * 100) : 0;
     });
-    const cores = categorias.map(c => {
-      const cat = CATEGORIAS.find(x => x.nome === c);
-      return cat ? cat.cor : "#3498db";
-    });
+    const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    const muted = css("--rb-muted");
+    const grid = css("--rb-border");
+    const mono = { family: "'JetBrains Mono', ui-monospace, monospace", size: 11 };
 
     if (chartInstance) chartInstance.destroy();
 
@@ -90,14 +89,24 @@ const StatsScreen = (() => {
           {
             label: "Aproveitamento por categoria (%)",
             data,
-            backgroundColor: cores,
-            borderRadius: 6
+            backgroundColor: css("--rb-blue"),
+            borderRadius: 3,
+            maxBarThickness: 36
           }
         ]
       },
       options: {
         responsive: true,
-        scales: { y: { beginAtZero: true, max: 100, ticks: { color: "#fff" } }, x: { ticks: { color: "#fff" } } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: { color: muted, font: mono, callback: v => v + "%" },
+            grid: { color: grid },
+            border: { display: false }
+          },
+          x: { ticks: { color: muted, font: mono }, grid: { display: false }, border: { color: grid } }
+        },
         plugins: { legend: { display: false } }
       }
     });
@@ -109,7 +118,7 @@ const StatsScreen = (() => {
       fallback = document.createElement("p");
       fallback.id = "chart-fallback";
       fallback.className = "chart-fallback";
-      fallback.textContent = "📉 Gráfico indisponível no momento. Conecte-se à internet e volte a esta tela.";
+      fallback.textContent = "Gráfico indisponível no momento. Conecte-se à internet e volte a esta tela.";
       cardEl.appendChild(fallback);
     }
     fallback.style.display = "block";

@@ -738,13 +738,10 @@ const TurmaGame = (() => {
     { name: "Grupo Roxo", color: "#9b59b6" }
   ];
   const LENGTHS = { rapida: 10, media: 20, completa: 40 };
-  const WHEEL_PALETTE = ["#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c"];
-  const DARK_TEXT_COLORS = ["#f1c40f"];
   const WHEEL_SIZE = 340;
   const SPIN_SECONDS = 3.4;
   const SETUP_KEY = "gira_turma_setup_v1";
   const MAX_NAME = 20;
-  const MEDALS = ["🥇", "🥈", "🥉"];
 
   const $ = id => document.getElementById(id);
 
@@ -791,6 +788,12 @@ const TurmaGame = (() => {
       [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
+  }
+
+  function iconNode(name) {
+    const tpl = document.createElement("template");
+    tpl.innerHTML = Icons.svg(name);
+    return tpl.content.firstElementChild;
   }
 
   function el(tag, className, text) {
@@ -948,71 +951,10 @@ const TurmaGame = (() => {
   }
 
   function drawWheel() {
-    const canvas = $("turma-wheel");
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    if (canvas.width !== WHEEL_SIZE * dpr) {
-      canvas.width = WHEEL_SIZE * dpr;
-      canvas.height = WHEEL_SIZE * dpr;
-    }
-    const ctx = canvas.getContext("2d");
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, WHEEL_SIZE, WHEEL_SIZE);
-
     const n = game.deck.length;
-    if (!n) return;
-    const c = WHEEL_SIZE / 2;
-    const radius = c - 7;
-    const step = (2 * Math.PI) / n;
-    const fontSize = Math.max(11, Math.min(18, radius * 0.8 * step * 0.6));
-
-    for (let i = 0; i < n; i++) {
-      let color = WHEEL_PALETTE[i % WHEEL_PALETTE.length];
-      // Evita que a última fatia fique com a mesma cor da primeira (vizinhas).
-      if (n > 1 && i === n - 1 && i % WHEEL_PALETTE.length === 0) color = WHEEL_PALETTE[2];
-
-      const start = i * step;
-      ctx.beginPath();
-      ctx.moveTo(c, c);
-      ctx.arc(c, c, radius, start, start + step);
-      ctx.closePath();
-      ctx.fillStyle = color;
-      ctx.fill();
-      if (n > 1) {
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.55)";
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-      }
-
-      ctx.save();
-      ctx.translate(c, c);
-      ctx.rotate(start + step / 2);
-      ctx.textAlign = "right";
-      ctx.textBaseline = "middle";
-      ctx.font = `800 ${fontSize}px 'Segoe UI', Arial, sans-serif`;
-      ctx.fillStyle = DARK_TEXT_COLORS.includes(color) ? "#3b2900" : "#ffffff";
-      ctx.fillText(String(game.deck[i].num), radius - 10, 0);
-      ctx.restore();
-    }
-
-    ctx.beginPath();
-    ctx.arc(c, c, c - 3.5, 0, 2 * Math.PI);
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
-    ctx.lineWidth = 7;
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(c, c, 30, 0, 2 * Math.PI);
-    ctx.fillStyle = "#ffffff";
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(c, c, 24, 0, 2 * Math.PI);
-    ctx.fillStyle = "#ffd700";
-    ctx.fill();
-    ctx.fillStyle = "#3b2900";
-    ctx.font = "900 22px 'Segoe UI', Arial, sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("?", c, c + 1);
+    const step = (2 * Math.PI) / Math.max(n, 1);
+    const fontSize = Math.max(10, Math.min(16, (WHEEL_SIZE / 2) * 0.8 * step * 0.6));
+    WheelPaint.draw($("turma-wheel"), WHEEL_SIZE, game.deck.map(d => d.num), { fontSize });
   }
 
   function spin() {
@@ -1107,11 +1049,15 @@ const TurmaGame = (() => {
 
     const title = $("turma-feedback-title");
     title.className = "feedback-title " + (isCorrect ? "correct" : "wrong");
-    title.textContent = isCorrect ? `✅ Acertou! +1 ponto para ${group.name}` : "❌ Não foi dessa vez!";
+    title.replaceChildren(
+      iconNode(isCorrect ? "check" : "x"),
+      document.createTextNode(isCorrect ? `Acertou · +1 ponto para ${group.name}` : "Não foi dessa vez")
+    );
     $("turma-feedback-answer").textContent = isCorrect ? "" : `Resposta certa: ${correctLetter}) ${correctText}`;
 
     const nextBtn = $("turma-next");
-    nextBtn.textContent = game.deck.length ? `➡ Passar a vez para ${nextGroup().name}` : "🏁 Ver resultado final";
+    if (game.deck.length) nextBtn.replaceChildren(document.createTextNode(`Passar a vez para ${nextGroup().name}`), iconNode("chevron"));
+    else nextBtn.replaceChildren(iconNode("flag"), document.createTextNode("Ver resultado final"));
 
     const feedback = $("turma-feedback");
     feedback.hidden = false;
@@ -1150,9 +1096,9 @@ const TurmaGame = (() => {
 
     const winners = ranked.filter(g => g.rank === 1);
     const title = $("turma-result-title");
-    if (winners.length === 1) title.textContent = `🏆 ${winners[0].name} venceu!`;
-    else if (winners.length === ranked.length) title.textContent = "🤝 Empate geral!";
-    else title.textContent = `🤝 Empate: ${winners.map(w => w.name).join(" e ")}`;
+    if (winners.length === 1) title.textContent = `${winners[0].name} venceu`;
+    else if (winners.length === ranked.length) title.textContent = "Empate geral";
+    else title.textContent = `Empate: ${winners.map(w => w.name).join(" e ")}`;
 
     $("turma-result-sub").textContent =
       `${plural(game.done, "pergunta respondida", "perguntas respondidas")} · ${plural(game.groups.length, "grupo", "grupos")}`;
@@ -1162,11 +1108,13 @@ const TurmaGame = (() => {
     const top = ranked.slice(0, 3);
     const visualOrder = top.length === 3 ? [top[1], top[0], top[2]] : top.length === 2 ? [top[1], top[0]] : top;
     visualOrder.forEach(g => {
-      const slot = el("div", `turma-podium-slot place-${top.indexOf(g) + 1}`);
+      // Altura pela colocação (empatados ficam na mesma altura).
+      const slot = el("div", `turma-podium-slot place-${Math.min(g.rank, 3)}`);
       slot.style.setProperty("--group-color", g.color);
+      const name = el("span", "turma-podium-name");
+      name.append(el("span", "turma-dot"), el("span", "", g.name));
       slot.append(
-        el("span", "turma-podium-medal", MEDALS[g.rank - 1] || "🎖️"),
-        el("span", "turma-podium-name", g.name),
+        name,
         el("span", "turma-podium-score", plural(g.score, "ponto", "pontos")),
         el("div", "turma-podium-block", `${g.rank}º`)
       );
@@ -1191,24 +1139,6 @@ const TurmaGame = (() => {
     game.current = null;
     showView("result");
     GameAudio.victory();
-    launchConfetti(winners.map(w => w.color));
-  }
-
-  function launchConfetti(colors) {
-    if (document.body.classList.contains("reduce-motion")) return;
-    const palette = [...colors, "#ffd700", "#ffffff"];
-    const layer = el("div", "turma-confetti");
-    layer.setAttribute("aria-hidden", "true");
-    for (let i = 0; i < 40; i++) {
-      const piece = el("i");
-      piece.style.left = `${Math.random() * 100}%`;
-      piece.style.background = palette[i % palette.length];
-      piece.style.animationDelay = `${Math.random() * 0.8}s`;
-      piece.style.animationDuration = `${2.2 + Math.random() * 1.4}s`;
-      layer.appendChild(piece);
-    }
-    document.body.appendChild(layer);
-    setTimeout(() => layer.remove(), 4500);
   }
 
   // ---------------------------------------------------------------- navigation
@@ -1265,6 +1195,11 @@ const TurmaGame = (() => {
       showView("setup");
     });
     document.addEventListener("keydown", onKeydown);
+    const redrawIfPlaying = () => {
+      if (game && game.deck.length) drawWheel();
+    };
+    document.addEventListener("rb:themechange", redrawIfPlaying);
+    WheelPaint.whenFontReady(redrawIfPlaying);
     renderSetup();
     showView("setup");
   }

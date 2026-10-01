@@ -6,13 +6,13 @@
 // agora categorizadas e com explicação adicionada. Nenhuma pergunta foi removida.
 
 const CATEGORIAS = [
-  { nome: "Matemática", emoji: "🧮", cor: "#3498db" },
-  { nome: "Português", emoji: "📖", cor: "#e74c3c" },
-  { nome: "Geografia", emoji: "🌎", cor: "#2ecc71" },
-  { nome: "Ciências", emoji: "🔬", cor: "#f1c40f" },
-  { nome: "História", emoji: "🏛️", cor: "#9b59b6" },
-  { nome: "Conhecimentos Gerais", emoji: "🧠", cor: "#e67e22" },
-  { nome: "Surpresa", emoji: "🎁", cor: "#1abc9c" } // sorteia uma categoria real na hora
+  { nome: "Matemática", rotulo: "MATEMÁTICA" },
+  { nome: "Português", rotulo: "PORTUGUÊS" },
+  { nome: "Geografia", rotulo: "GEOGRAFIA" },
+  { nome: "Ciências", rotulo: "CIÊNCIAS" },
+  { nome: "História", rotulo: "HISTÓRIA" },
+  { nome: "Conhecimentos Gerais", rotulo: "GERAIS" },
+  { nome: "Surpresa", rotulo: "SURPRESA" } // sorteia uma categoria real na hora
 ];
 
 const QUESTIONS_V2 = [

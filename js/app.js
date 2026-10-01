@@ -37,6 +37,8 @@ const App = (() => {
     else root.removeAttribute("data-theme"); // segue o tema do sistema
 
     document.body.classList.toggle("reduce-motion", settings.animacoesOn === false);
+    // As roletas são desenhadas em canvas com cores do tema: avisa para redesenhar.
+    document.dispatchEvent(new Event("rb:themechange"));
   }
 
   function renderAchievementsScreen() {
@@ -45,21 +47,21 @@ const App = (() => {
     const unlockedCount = list.filter(a => a.desbloqueada).length;
 
     document.getElementById("achievements-progress-fill").style.width = `${(unlockedCount / list.length) * 100}%`;
-    document.getElementById("achievements-progress-text").textContent = `${unlockedCount}/${list.length} desbloqueadas`;
+    document.getElementById("achievements-progress-text").textContent = `${unlockedCount}/${list.length}`;
 
     grid.innerHTML = list
       .map(a => {
         const dataFormatada = a.desbloqueadaEm ? new Date(a.desbloqueadaEm).toLocaleDateString("pt-BR") : null;
         return `
         <div class="achievement-card ${a.desbloqueada ? "unlocked" : "locked"}">
-          <span class="ach-badge">${a.desbloqueada ? a.emoji : "🔒"}</span>
+          <span class="ach-badge">${Icons.svg(a.desbloqueada ? a.icone : "lock")}</span>
           <div class="ach-info">
             <h4>${a.nome}</h4>
             <p>${a.descricao}</p>
             ${
               a.desbloqueada
-                ? `<p class="ach-date">✅ Desbloqueada em ${dataFormatada}</p>`
-                : `<p class="ach-locked-tag">🔒 Bloqueada</p>`
+                ? `<p class="ach-date">Desbloqueada em ${dataFormatada}</p>`
+                : `<p class="ach-locked-tag">Bloqueada</p>`
             }
           </div>
         </div>`;
@@ -70,7 +72,9 @@ const App = (() => {
   let toastTimeout = null;
   function showAchievementToast(a) {
     const toast = document.getElementById("achievement-toast");
-    toast.textContent = `🏆 Conquista desbloqueada: ${a.emoji} ${a.nome}`;
+    toast.innerHTML =
+      Icons.svg(a.icone) +
+      `<span class="toast-text"><span class="toast-eyebrow">Conquista desbloqueada</span>${a.nome}</span>`;
     toast.classList.add("show");
     GameAudio.achievement();
     clearTimeout(toastTimeout);
@@ -184,6 +188,9 @@ const App = (() => {
   }
 
   function init() {
+    if (window.matchMedia) {
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+    }
     applyTheme();
     loadSettingsIntoForm();
     wireNavigation();

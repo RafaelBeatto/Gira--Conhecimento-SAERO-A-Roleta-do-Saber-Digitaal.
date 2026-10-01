@@ -7,12 +7,14 @@ const SoloGame = (() => {
   const PONTOS_BASE = { facil: 100, medio: 150, dificil: 200 };
   const CHANCE_EVENTO = 0.15;
   const EVENTOS = [
-    { id: "dobro", emoji: "🎁", nome: "DOBRO DE PONTOS" },
-    { id: "relampago", emoji: "⚡", nome: "RESPOSTA RELÂMPAGO" },
-    { id: "vida", emoji: "❤️", nome: "VIDA EXTRA" },
-    { id: "dica", emoji: "💡", nome: "DICA GRÁTIS" },
-    { id: "combo2", emoji: "🔥", nome: "COMBO x2" }
+    { id: "dobro", icone: "star", nome: "Dobro de pontos" },
+    { id: "relampago", icone: "zap", nome: "Resposta relâmpago" },
+    { id: "vida", icone: "heart", nome: "Vida extra" },
+    { id: "dica", icone: "bulb", nome: "Dica grátis" },
+    { id: "combo2", icone: "flame", nome: "Combo x2" }
   ];
+  const DIFICULDADE_LABEL = { facil: "Fácil", medio: "Médio", dificil: "Difícil" };
+  const LETRAS = "ABCDE";
 
   let vidas = 3;
   let pontuacao = 0;
@@ -100,7 +102,6 @@ const SoloGame = (() => {
     const livesEl = document.getElementById("solo-lives");
     livesEl.style.display = settings.vidasOn ? "" : "none";
     document.getElementById("solo-lives-text").textContent = vidas === Infinity ? "∞" : String(Math.max(0, vidas));
-    livesEl.querySelector(".hud-icon").textContent = vidas <= 0 ? "💔" : "❤️";
     livesEl.classList.toggle("pulse-danger", settings.vidasOn && vidas <= 1);
 
     document.getElementById("solo-combo-text").textContent = combo > 0 ? `x${combo}` : "—";
@@ -131,7 +132,7 @@ const SoloGame = (() => {
 
     eventoAtivo = candidatos[Math.floor(Math.random() * candidatos.length)];
     GameAudio.special();
-    banner.textContent = `${eventoAtivo.emoji} ${eventoAtivo.nome}!`;
+    banner.innerHTML = Icons.svg(eventoAtivo.icone) + `<span>${eventoAtivo.nome}</span>`;
     banner.classList.add("show");
 
     if (eventoAtivo.id === "vida") {
@@ -165,17 +166,17 @@ const SoloGame = (() => {
 
   function renderQuestion() {
     const area = document.getElementById("solo-question-area");
-    const cat = CATEGORIAS.find(c => c.nome === currentQuestion.categoria) || { emoji: "❓" };
+    const nivel = currentQuestion.dificuldade;
 
     area.innerHTML = `
       <div class="question-card">
         <div class="question-meta">
-          <span>${cat.emoji} ${escapeHtml(currentQuestion.categoria)}</span>
-          <span class="badge-dificuldade ${currentQuestion.dificuldade}">${currentQuestion.dificuldade}</span>
+          <span>${escapeHtml(currentQuestion.categoria)}</span>
+          <span class="badge-dificuldade ${nivel}" title="Dificuldade"><i></i><i></i><i></i>${DIFICULDADE_LABEL[nivel] || nivel}</span>
         </div>
         <div class="question-text">${escapeHtml(currentQuestion.pergunta)}</div>
         <div class="alternativas" id="solo-alternativas"></div>
-        <button class="hint-btn" id="hint-btn">💡 Pedir Dica</button>
+        <button class="btn secondary btn-sm hint-btn" id="hint-btn">${Icons.svg("bulb")}Pedir dica</button>
         <div class="hint-text" id="hint-text" style="display:none;"></div>
         <div class="feedback-panel" id="feedback-panel"></div>
       </div>`;
@@ -185,7 +186,13 @@ const SoloGame = (() => {
       const btn = document.createElement("button");
       btn.className = "alt-btn";
       btn.dataset.idx = String(i);
-      btn.textContent = alt;
+      const letter = document.createElement("span");
+      letter.className = "alt-letter";
+      letter.textContent = LETRAS[i];
+      const text = document.createElement("span");
+      text.className = "alt-text";
+      text.textContent = alt;
+      btn.append(letter, text);
       btn.onclick = () => handleAnswer(i, btn);
       altsEl.appendChild(btn);
     });
@@ -246,7 +253,7 @@ const SoloGame = (() => {
 
     document.getElementById("hint-btn").disabled = true;
     const hintText = document.getElementById("hint-text");
-    hintText.textContent = "💡 Dica: eliminamos uma alternativa incorreta para você.";
+    hintText.textContent = "Dica: uma alternativa incorreta foi eliminada.";
     hintText.style.display = "block";
   }
 
@@ -377,18 +384,19 @@ const SoloGame = (() => {
     });
 
     renderHUD();
-    showFeedback(false, "⏰ Tempo esgotado!", 0);
+    showFeedback(false, "Tempo esgotado", 0, "timer");
     eventoAtivo = null;
   }
 
-  function showFeedback(correto, tituloOverride, pontosGanhos) {
+  function showFeedback(correto, tituloOverride, pontosGanhos, iconeOverride) {
     const panel = document.getElementById("feedback-panel");
-    const titulo = tituloOverride || (correto ? "🎉 CORRETO!" : "❌ NÃO FOI DESSA VEZ");
+    const titulo = tituloOverride || (correto ? "Correto" : "Não foi dessa vez");
+    const icone = iconeOverride || (correto ? "check" : "x");
     const acabou = Storage.getSettings().vidasOn && vidas <= 0;
-    const continuarLabel = acabou ? "🏁 Ver Resultado" : "➡ Próxima Rodada";
+    const continuarLabel = acabou ? `${Icons.svg("flag")}Ver resultado` : `Próxima rodada${Icons.svg("chevron")}`;
 
     panel.innerHTML = `
-      <div class="feedback-title ${correto ? "correct" : "wrong"}">${titulo}</div>
+      <div class="feedback-title ${correto ? "correct" : "wrong"}">${Icons.svg(icone)}${titulo}</div>
       <div class="feedback-explicacao">${escapeHtml(currentQuestion.explicacao)}</div>
       ${correto ? `<div class="feedback-points">+${pontosGanhos || 0} pontos</div>` : ""}
       <button class="btn primary" id="btn-continuar-rodada">${continuarLabel}</button>
@@ -433,12 +441,12 @@ const SoloGame = (() => {
       : "0.0";
 
     const stats = [
-      { icon: "🎯", value: acertos, label: "Acertos" },
-      { icon: "❌", value: erros, label: "Erros" },
-      { icon: "🔥", value: comboMax, label: "Combo máx." },
-      { icon: "⏱️", value: tempoMedio + "s", label: "Tempo médio" },
-      { icon: "📈", value: aproveitamento + "%", label: "Aproveitamento" },
-      { icon: "❤️", value: vidas === Infinity ? "—" : Math.max(0, vidas), label: "Vidas restantes" }
+      { icon: "check", value: acertos, label: "Acertos" },
+      { icon: "x", value: erros, label: "Erros" },
+      { icon: "flame", value: comboMax, label: "Combo máx." },
+      { icon: "timer", value: tempoMedio + "s", label: "Tempo médio" },
+      { icon: "percent", value: aproveitamento + "%", label: "Acerto" },
+      { icon: "heart", value: vidas === Infinity ? "—" : Math.max(0, vidas), label: "Vidas" }
     ];
 
     let html = `
@@ -451,20 +459,19 @@ const SoloGame = (() => {
           .map(
             s => `
           <div class="result-stat">
-            <span class="result-stat-icon">${s.icon}</span>
+            <span class="result-stat-label">${Icons.svg(s.icon)}${s.label}</span>
             <span class="result-stat-value">${s.value}</span>
-            <span class="result-stat-label">${s.label}</span>
           </div>`
           )
           .join("")}
       </div>`;
 
     if (newAchievementsThisGame.length) {
-      html += `<div class="new-achievement-list"><strong>🏆 Novas conquistas</strong>`;
+      html += `<div class="new-achievement-list"><strong>Novas conquistas</strong>`;
       newAchievementsThisGame.forEach(a => {
         html += `
           <div class="new-achievement-item">
-            <span class="new-achievement-emoji">${a.emoji}</span>
+            <span class="new-achievement-emoji">${Icons.svg(a.icone)}</span>
             <div>
               <div class="new-achievement-name">${a.nome}</div>
               <div class="new-achievement-desc">${a.descricao}</div>
@@ -477,7 +484,7 @@ const SoloGame = (() => {
     const resultCardEl = document.getElementById("solo-result-card");
     resultCardEl.className = "result-card " + (gameOver ? "gameover" : "victory");
     resultCardEl.innerHTML = html;
-    document.getElementById("solo-result-title").textContent = gameOver ? "💀 GAME OVER" : "🎉 FIM DE JOGO!";
+    document.getElementById("solo-result-title").textContent = gameOver ? "Game over" : "Fim de jogo";
   }
 
   function endGame() {
