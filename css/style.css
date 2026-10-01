@@ -32,7 +32,7 @@
   --rb-border-strong: #cfcfcf;
   --rb-text: #111111;
   --rb-muted: #666666;
-  --rb-subtle: #8a8a8a;
+  --rb-subtle: #6b6b6b;
 
   --rb-primary: #111111;
   --rb-primary-hover: #2a2a2a;
@@ -72,7 +72,7 @@
   --rb-border-strong: #383838;
   --rb-text: #f5f5f5;
   --rb-muted: #a0a0a0;
-  --rb-subtle: #757575;
+  --rb-subtle: #858585;
 
   --rb-primary: #ffffff;
   --rb-primary-hover: #e2e2e2;
@@ -106,7 +106,7 @@
     --rb-border-strong: #383838;
     --rb-text: #f5f5f5;
     --rb-muted: #a0a0a0;
-    --rb-subtle: #757575;
+    --rb-subtle: #858585;
 
     --rb-primary: #ffffff;
     --rb-primary-hover: #e2e2e2;
@@ -215,14 +215,16 @@ button { cursor: pointer; }
 /* Monograma RB: PNG usado como máscara, então assume a cor do texto do tema. */
 .rb-mark {
   display: inline-block;
+  /* Proporção do logo (488x230) em altura fixa: aspect-ratio não existe
+     em navegadores antigos e o logo sumiria. */
   width: 120px;
-  aspect-ratio: 488 / 230;
+  height: 57px;
   background-color: currentColor;
   -webkit-mask: url("../img/rb-mark.png") center / contain no-repeat;
   mask: url("../img/rb-mark.png") center / contain no-repeat;
 }
 
-.rb-mark-sm { width: 30px; }
+.rb-mark-sm { width: 30px; height: 14px; }
 
 /* ==========================================================================
    TELAS
@@ -1171,7 +1173,10 @@ button { cursor: pointer; }
 
 .slider {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   border-radius: 999px;
   background: var(--rb-border-strong);
   cursor: pointer;

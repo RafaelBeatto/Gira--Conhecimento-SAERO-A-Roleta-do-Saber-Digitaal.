@@ -189,7 +189,11 @@ const App = (() => {
 
   function init() {
     if (window.matchMedia) {
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      // iOS/Safari até a versão 13 só tem addListener; addEventListener lá
+      // não existe e derrubaria toda a inicialização do app.
+      if (mq.addEventListener) mq.addEventListener("change", applyTheme);
+      else if (mq.addListener) mq.addListener(applyTheme);
     }
     applyTheme();
     loadSettingsIntoForm();
