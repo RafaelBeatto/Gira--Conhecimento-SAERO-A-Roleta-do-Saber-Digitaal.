@@ -17,11 +17,45 @@
 <body>
 
 <!-- ============================================================
+     MENU RB: barra superior + gaveta no celular, barra lateral no computador
+     ============================================================ -->
+<header class="app-header">
+  <button class="app-brand" id="nav-brand" aria-label="Gira Conhecimento — início">
+    <span class="rb-mark rb-mark-header" aria-hidden="true"></span>
+    <span class="app-brand-divider" aria-hidden="true"></span>
+    <span class="app-brand-name">Gira Conhecimento</span>
+  </button>
+  <button class="icon-btn" id="nav-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="app-nav"><span data-icon="menu"></span></button>
+</header>
+
+<nav class="app-nav" id="app-nav" aria-label="Menu principal">
+  <div class="app-nav-head">
+    <span class="rb-mark rb-mark-nav" role="img" aria-label="RB"></span>
+    <button class="icon-btn app-nav-close" id="nav-close" aria-label="Fechar menu"><span data-icon="x"></span></button>
+  </div>
+  <p class="app-nav-title">Gira Conhecimento</p>
+  <p class="app-nav-sub">A roleta do saber digital</p>
+
+  <div class="app-nav-items">
+    <button class="nav-item" data-nav="screen-home"><span data-icon="home"></span>Início</button>
+    <button class="nav-item" data-nav="screen-mode-select"><span data-icon="play"></span>Jogar</button>
+    <button class="nav-item" data-nav="screen-stats"><span data-icon="chart"></span>Meu desempenho</button>
+    <button class="nav-item" data-nav="screen-achievements"><span data-icon="trophy"></span>Conquistas</button>
+    <button class="nav-item" data-nav="screen-settings"><span data-icon="sliders"></span>Configurações</button>
+  </div>
+
+  <div class="app-nav-footer">
+    <span class="rb-mark rb-mark-sm" aria-hidden="true"></span>
+    <span>Rafael Beatto</span>
+  </div>
+</nav>
+<div class="app-nav-backdrop" id="nav-backdrop" hidden></div>
+
+<!-- ============================================================
      TELA: HOME
      ============================================================ -->
 <section id="screen-home" class="screen active">
   <div class="home-hero">
-    <span class="rb-mark" role="img" aria-label="RB — Rafael Beatto"></span>
     <h1>Gira Conhecimento</h1>
     <p class="home-subtitle">A roleta do saber digital</p>
   </div>
@@ -69,11 +103,6 @@
       <span data-icon="chevron" class="menu-row-chevron"></span>
     </button>
   </nav>
-
-  <footer class="app-footer">
-    <span class="rb-mark rb-mark-sm" aria-hidden="true"></span>
-    <span>Rafael Beatto</span>
-  </footer>
 </section>
 
 <!-- ============================================================

@@ -16,6 +16,7 @@ const Icons = (() => {
     home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M10 21v-6h4v6"/>',
     back: '<path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>',
     chevron: '<path d="m9 6 6 6-6 6"/>',
+    menu: '<path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/>',
     play: '<path d="M7 4.5v15l12-7.5z"/>',
     chart: '<path d="M3 3v18h18"/><path d="M8 17v-5"/><path d="M13 17V8"/><path d="M18 17v-9"/>',
     trophy:

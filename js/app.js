@@ -13,11 +13,52 @@ const App = (() => {
     "screen-settings"
   ];
 
+  // Telas de jogo marcam "Jogar" como item ativo no menu.
+  const NAV_PARENT = {
+    "screen-solo-game": "screen-mode-select",
+    "screen-solo-result": "screen-mode-select",
+    "screen-turma": "screen-mode-select"
+  };
+
   function showScreen(id) {
     SCREENS.forEach(s => {
       document.getElementById(s).classList.toggle("active", s === id);
     });
+    const navId = NAV_PARENT[id] || id;
+    document.querySelectorAll(".nav-item").forEach(item => {
+      const active = item.dataset.nav === navId;
+      item.classList.toggle("active", active);
+      if (active) item.setAttribute("aria-current", "page");
+      else item.removeAttribute("aria-current");
+    });
     window.scrollTo(0, 0);
+  }
+
+  function currentScreen() {
+    const el = document.querySelector(".screen.active");
+    return el ? el.id : null;
+  }
+
+  // Sair de uma partida em andamento sempre pede confirmação.
+  function canLeaveCurrentScreen() {
+    const current = currentScreen();
+    if (current === "screen-solo-game" && SoloGame.isActive()) {
+      if (!confirm("Sair da partida atual? O progresso desta rodada será perdido.")) return false;
+      SoloGame.abandon();
+    }
+    if (current === "screen-turma") return TurmaGame.requestExit();
+    return true;
+  }
+
+  // Abre uma tela principal preparando o conteúdo dela.
+  function goTo(id) {
+    if (id === currentScreen()) return;
+    if (!canLeaveCurrentScreen()) return;
+    if (id === "screen-home") refreshHomeMiniStats();
+    if (id === "screen-stats") StatsScreen.render();
+    if (id === "screen-achievements") renderAchievementsScreen();
+    if (id === "screen-settings") loadSettingsIntoForm();
+    showScreen(id);
   }
 
   function refreshHomeMiniStats() {
@@ -124,59 +165,72 @@ const App = (() => {
   }
 
   function wireNavigation() {
-    document.getElementById("btn-jogar-agora").addEventListener("click", () => showScreen("screen-mode-select"));
-    document.getElementById("btn-ver-desempenho").addEventListener("click", () => {
-      StatsScreen.render();
-      showScreen("screen-stats");
-    });
-    document.getElementById("btn-conquistas").addEventListener("click", () => {
-      renderAchievementsScreen();
-      showScreen("screen-achievements");
-    });
-    document.getElementById("btn-configuracoes").addEventListener("click", () => {
-      loadSettingsIntoForm();
-      showScreen("screen-settings");
-    });
+    const on = (id, fn) => document.getElementById(id).addEventListener("click", fn);
 
-    document.getElementById("btn-mode-select-back").addEventListener("click", () => showScreen("screen-home"));
+    on("btn-jogar-agora", () => goTo("screen-mode-select"));
+    on("btn-ver-desempenho", () => goTo("screen-stats"));
+    on("btn-conquistas", () => goTo("screen-achievements"));
+    on("btn-configuracoes", () => goTo("screen-settings"));
 
-    document.getElementById("card-modo-solo").addEventListener("click", () => {
+    on("card-modo-solo", () => {
       SoloGame.start();
       showScreen("screen-solo-game");
     });
-    document.getElementById("card-modo-turma").addEventListener("click", () => {
+    on("card-modo-turma", () => {
       TurmaGame.open();
       showScreen("screen-turma");
     });
 
-    ["btn-turma-home", "turma-result-home"].forEach(id =>
-      document.getElementById(id).addEventListener("click", () => {
-        if (TurmaGame.requestExit()) showScreen("screen-home");
-      })
-    );
-    document.getElementById("btn-solo-home-top").addEventListener("click", () => {
-      if (confirm("Sair da partida atual? O progresso desta rodada será perdido.")) {
-        SoloGame.abandon();
-        showScreen("screen-home");
-      }
-    });
-
-    document.getElementById("btn-jogar-novamente").addEventListener("click", () => {
+    on("btn-jogar-novamente", () => {
       SoloGame.start();
       showScreen("screen-solo-game");
     });
-    document.getElementById("btn-resultado-home").addEventListener("click", () => {
-      refreshHomeMiniStats();
-      showScreen("screen-home");
+    on("btn-resultado-desempenho", () => goTo("screen-stats"));
+
+    [
+      "btn-mode-select-back",
+      "btn-turma-home",
+      "turma-result-home",
+      "btn-solo-home-top",
+      "btn-resultado-home",
+      "btn-achievements-home",
+      "btn-stats-home",
+      "btn-settings-home"
+    ].forEach(id => on(id, () => goTo("screen-home")));
+  }
+
+  function wireMenu() {
+    const nav = document.getElementById("app-nav");
+    const toggle = document.getElementById("nav-toggle");
+    const backdrop = document.getElementById("nav-backdrop");
+
+    function setOpen(open) {
+      nav.classList.toggle("open", open);
+      backdrop.hidden = !open;
+      toggle.setAttribute("aria-expanded", String(open));
+      if (open) nav.querySelector(".nav-item.active, .nav-item").focus();
+    }
+
+    toggle.addEventListener("click", () => setOpen(true));
+    document.getElementById("nav-close").addEventListener("click", () => {
+      setOpen(false);
+      toggle.focus();
     });
-    document.getElementById("btn-resultado-desempenho").addEventListener("click", () => {
-      StatsScreen.render();
-      showScreen("screen-stats");
+    backdrop.addEventListener("click", () => setOpen(false));
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && nav.classList.contains("open")) {
+        setOpen(false);
+        toggle.focus();
+      }
     });
 
-    document.getElementById("btn-achievements-home").addEventListener("click", () => showScreen("screen-home"));
-    document.getElementById("btn-stats-home").addEventListener("click", () => showScreen("screen-home"));
-    document.getElementById("btn-settings-home").addEventListener("click", () => showScreen("screen-home"));
+    document.getElementById("nav-brand").addEventListener("click", () => goTo("screen-home"));
+    nav.querySelectorAll(".nav-item").forEach(item =>
+      item.addEventListener("click", () => {
+        setOpen(false);
+        goTo(item.dataset.nav);
+      })
+    );
   }
 
   function registerServiceWorker() {
@@ -198,6 +252,7 @@ const App = (() => {
     applyTheme();
     loadSettingsIntoForm();
     wireNavigation();
+    wireMenu();
     wireSettings();
     refreshHomeMiniStats();
     showScreen("screen-home");

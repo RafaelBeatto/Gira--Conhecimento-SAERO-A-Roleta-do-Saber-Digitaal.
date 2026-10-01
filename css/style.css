@@ -361,6 +361,196 @@ button { cursor: pointer; }
 .ghost-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ==========================================================================
+   MENU RB — barra superior + gaveta (celular) / barra lateral (computador)
+   ========================================================================== */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: calc(100% + 32px);
+  margin: 0 -16px;
+  padding: 0 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--rb-bg);
+  border-bottom: 1px solid var(--rb-border);
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  color: var(--rb-text);
+}
+
+.rb-mark-header { width: 52px; height: 25px; }
+
+.app-brand-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--rb-border-strong);
+}
+
+.app-brand-name {
+  font-family: var(--rb-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  width: min(300px, 86vw);
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: var(--rb-bg);
+  border-left: 1px solid var(--rb-border);
+  overflow-y: auto;
+  transform: translateX(100%);
+  visibility: hidden;
+  /* Ao fechar, fica invisível só no fim do deslize; ao abrir, fica visível
+     na hora (senão o foco do teclado não consegue entrar no menu). */
+  transition: transform 200ms ease, visibility 0s linear 200ms;
+}
+
+.app-nav.open {
+  transform: none;
+  visibility: visible;
+  transition: transform 200ms ease, visibility 0s;
+}
+
+.app-nav-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+}
+
+.rb-mark-nav { width: 72px; height: 34px; }
+
+.app-nav-title {
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.app-nav-sub {
+  margin-top: 2px;
+  font-family: var(--rb-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rb-muted);
+}
+
+.app-nav-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rb-border);
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--rb-muted);
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+  transition: background-color var(--rb-transition), color var(--rb-transition);
+}
+.nav-item:hover { background: var(--rb-surface); color: var(--rb-text); }
+
+/* Item ativo: texto forte + traço azul à esquerda (indicador de estado). */
+.nav-item.active {
+  background: var(--rb-surface);
+  color: var(--rb-text);
+  font-weight: 600;
+}
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--rb-blue);
+}
+
+.app-nav-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--rb-border);
+  font-family: var(--rb-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rb-subtle);
+}
+
+.app-nav-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 1024px) {
+  body { padding-left: 276px; }
+
+  .app-header,
+  .app-nav-close,
+  .app-nav-backdrop { display: none !important; }
+
+  .app-nav {
+    left: 0;
+    right: auto;
+    width: 260px;
+    padding: 24px 16px;
+    border-left: 0;
+    border-right: 1px solid var(--rb-border);
+    transform: none;
+    visibility: visible;
+    transition: none;
+  }
+
+  .screen { padding-top: 12px; }
+}
+
+/* ==========================================================================
    HOME
    ========================================================================== */
 .home-hero {
@@ -368,10 +558,8 @@ button { cursor: pointer; }
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 56px 0 32px;
+  padding: 40px 0 28px;
 }
-
-.home-hero h1 { margin-top: 24px; }
 
 .home-subtitle {
   margin-top: 10px;
@@ -452,18 +640,6 @@ button { cursor: pointer; }
 .menu-row-desc { font-size: 13px; color: var(--rb-muted); }
 .menu-row-chevron { width: 18px; height: 18px; color: var(--rb-subtle); }
 
-.app-footer {
-  margin-top: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-family: var(--rb-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--rb-subtle);
-}
 
 /* ==========================================================================
    ESCOLHA DE MODO
@@ -1651,7 +1827,7 @@ button { cursor: pointer; }
 }
 
 @media (max-width: 420px) {
-  .home-hero { padding: 40px 0 24px; }
+  .home-hero { padding: 28px 0 22px; }
   .home-stat { padding: 12px 10px 10px; }
   .home-stat-label { font-size: 10px; }
   .home-stat-value { font-size: 19px; }
