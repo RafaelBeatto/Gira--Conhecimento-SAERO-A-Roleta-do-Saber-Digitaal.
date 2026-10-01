@@ -2,12 +2,13 @@
 // perguntas, a pontuação, as conquistas e as estatísticas continuem
 // funcionando mesmo sem internet depois do primeiro carregamento.
 
-const CACHE_NAME = "gira-conhecimento-v2-cache-v4";
+const CACHE_NAME = "gira-conhecimento-v2-cache-v5";
 
 const APP_SHELL = [
   "./",
   "./index.html",
   "./css/style.css",
+  "./js/icons.js",
   "./js/questions.js",
   "./js/storage.js",
   "./js/audio.js",
@@ -18,6 +19,10 @@ const APP_SHELL = [
   "./js/stats.js",
   "./js/app.js",
   "./manifest.json",
+  "./fonts/inter.woff2",
+  "./fonts/jetbrains-mono.woff2",
+  "./img/rb-mark.png",
+  "./icons/favicon-32.png",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-512.png"

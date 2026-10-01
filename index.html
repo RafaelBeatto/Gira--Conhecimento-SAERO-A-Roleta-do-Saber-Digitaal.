@@ -5,10 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Gira Conhecimento — A Roleta do Saber Digital</title>
   <meta name="description" content="Roleta de conhecimento educativa: gire, descubra a categoria, responda e acumule pontos, combos e conquistas.">
-  <meta name="theme-color" content="#2980b9">
+  <meta name="theme-color" content="#0A0A0A">
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icons/icon-192.png">
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -17,114 +20,125 @@
      TELA: HOME
      ============================================================ -->
 <section id="screen-home" class="screen active">
-  <div class="home-wheel-deco" aria-hidden="true">
-    <div class="home-wheel-ring"></div>
-    <span class="home-wheel-emoji">🎯</span>
+  <div class="home-hero">
+    <span class="rb-mark" role="img" aria-label="RB — Rafael Beatto"></span>
+    <h1>Gira Conhecimento</h1>
+    <p class="home-subtitle">A roleta do saber digital</p>
   </div>
 
-  <h1>Gira Conhecimento</h1>
-  <p class="home-subtitle">A Roleta do Saber Digital</p>
-
-  <div class="home-stats-strip">
+  <div class="home-stats-strip" aria-label="Resumo">
     <div class="home-stat">
+      <span class="home-stat-label">Melhor pontuação</span>
       <span class="home-stat-value" id="home-best-score">0</span>
-      <span class="home-stat-label">🏆 Melhor pontuação</span>
     </div>
     <div class="home-stat">
+      <span class="home-stat-label">Maior combo</span>
       <span class="home-stat-value" id="home-best-combo">0</span>
-      <span class="home-stat-label">🔥 Maior combo</span>
     </div>
     <div class="home-stat">
+      <span class="home-stat-label">Conquistas</span>
       <span class="home-stat-value" id="home-achievements-count">0/8</span>
-      <span class="home-stat-label">🥇 Conquistas</span>
     </div>
   </div>
 
-  <div class="home-tiles">
-    <button id="btn-jogar-agora" class="home-tile primary">
-      <span class="home-tile-icon">🎡</span>
-      <span class="home-tile-title">Jogar Agora</span>
-      <span class="home-tile-desc">Modo Solo ou Turma</span>
+  <button id="btn-jogar-agora" class="btn primary btn-lg btn-block"><span data-icon="play"></span>Jogar agora</button>
+
+  <nav class="home-menu" aria-label="Menu">
+    <button id="btn-ver-desempenho" class="menu-row">
+      <span data-icon="chart" class="menu-row-icon"></span>
+      <span class="menu-row-text">
+        <span class="menu-row-title">Meu desempenho</span>
+        <span class="menu-row-desc">Estatísticas e progresso</span>
+      </span>
+      <span data-icon="chevron" class="menu-row-chevron"></span>
     </button>
-    <button id="btn-ver-desempenho" class="home-tile stats">
-      <span class="home-tile-icon">📊</span>
-      <span class="home-tile-title">Meu Desempenho</span>
-      <span class="home-tile-desc">Estatísticas e progresso</span>
+    <button id="btn-conquistas" class="menu-row">
+      <span data-icon="trophy" class="menu-row-icon"></span>
+      <span class="menu-row-text">
+        <span class="menu-row-title">Conquistas</span>
+        <span class="menu-row-desc">Suas medalhas</span>
+      </span>
+      <span data-icon="chevron" class="menu-row-chevron"></span>
     </button>
-    <button id="btn-conquistas" class="home-tile achievements">
-      <span class="home-tile-icon">🏆</span>
-      <span class="home-tile-title">Conquistas</span>
-      <span class="home-tile-desc">Suas medalhas</span>
+    <button id="btn-configuracoes" class="menu-row">
+      <span data-icon="sliders" class="menu-row-icon"></span>
+      <span class="menu-row-text">
+        <span class="menu-row-title">Configurações</span>
+        <span class="menu-row-desc">Som, tema e partida</span>
+      </span>
+      <span data-icon="chevron" class="menu-row-chevron"></span>
     </button>
-    <button id="btn-configuracoes" class="home-tile settings">
-      <span class="home-tile-icon">⚙️</span>
-      <span class="home-tile-title">Configurações</span>
-      <span class="home-tile-desc">Som, tema e mais</span>
-    </button>
-  </div>
+  </nav>
+
+  <footer class="app-footer">
+    <span class="rb-mark rb-mark-sm" aria-hidden="true"></span>
+    <span>Rafael Beatto</span>
+  </footer>
 </section>
 
 <!-- ============================================================
      TELA: ESCOLHA DE MODO
      ============================================================ -->
 <section id="screen-mode-select" class="screen">
-  <h2>Escolha o modo de jogo</h2>
-  <p class="mode-select-subtitle">Como você quer jogar hoje?</p>
+  <div class="screen-bar">
+    <button class="icon-btn" id="btn-mode-select-back" aria-label="Voltar"><span data-icon="back"></span></button>
+    <span class="screen-bar-title">Escolha o modo</span>
+  </div>
 
   <div class="mode-cards">
     <button class="mode-card solo" id="card-modo-solo">
-      <span class="mode-card-badge new">✨ Novo</span>
-      <span class="mode-emoji">🕹️</span>
-      <h3>Modo Solo</h3>
-      <p>Gire a roleta de categorias e jogue sozinho, no seu ritmo.</p>
-      <div class="mode-card-tags">
-        <span>🔥 Combo</span>
-        <span>❤️ Vidas</span>
-        <span>⏱️ Cronômetro</span>
-        <span>🏆 Conquistas</span>
-      </div>
+      <span class="mode-icon"><span data-icon="user"></span></span>
+      <span class="mode-card-body">
+        <span class="mode-card-head">
+          <span class="mode-card-title">Modo Solo</span>
+          <span class="mode-card-badge new">Novo</span>
+        </span>
+        <span class="mode-card-desc">Gire a roleta de categorias e jogue sozinho, no seu ritmo.</span>
+        <span class="mode-card-tags">
+          <span>Combo</span>
+          <span>Vidas</span>
+          <span>Cronômetro</span>
+          <span>Conquistas</span>
+        </span>
+      </span>
+      <span data-icon="chevron" class="mode-card-chevron"></span>
     </button>
 
     <button class="mode-card turma" id="card-modo-turma">
-      <span class="mode-card-badge classic">🏫 Sala de aula</span>
-      <span class="mode-emoji">👥</span>
-      <h3>Modo Turma</h3>
-      <p>De 2 a 5 grupos se revezando na roleta, com placar ao vivo e pódio no final.</p>
-      <div class="mode-card-groups" aria-hidden="true">
-        <span style="background:#3498db"></span>
-        <span style="background:#e74c3c"></span>
-        <span style="background:#2ecc71"></span>
-        <span style="background:#f1c40f"></span>
-        <span style="background:#9b59b6"></span>
-      </div>
-      <div class="mode-card-tags">
-        <span>✏️ Nomes dos grupos</span>
-        <span>🎯 10, 20 ou 40 perguntas</span>
-        <span>🏅 Pódio</span>
-      </div>
+      <span class="mode-icon"><span data-icon="users"></span></span>
+      <span class="mode-card-body">
+        <span class="mode-card-head">
+          <span class="mode-card-title">Modo Turma</span>
+          <span class="mode-card-badge">Sala de aula</span>
+        </span>
+        <span class="mode-card-desc">De 2 a 5 grupos se revezando na roleta, com placar ao vivo e pódio no final.</span>
+        <span class="mode-card-tags">
+          <span>Nomes dos grupos</span>
+          <span>10, 20 ou 40 perguntas</span>
+          <span>Pódio</span>
+        </span>
+      </span>
+      <span data-icon="chevron" class="mode-card-chevron"></span>
     </button>
   </div>
-
-  <button class="btn neutral" id="btn-mode-select-back" style="margin-top:22px;">⬅ Voltar</button>
 </section>
 
 <!-- ============================================================
      TELA: MODO TURMA
      ============================================================ -->
 <section id="screen-turma" class="screen">
-  <div class="turma-topbar">
-    <button class="topbar-btn" id="btn-turma-home">⬅ Início</button>
-    <span class="turma-round" id="turma-round" hidden></span>
-    <button class="topbar-btn" id="turma-end" hidden>🏁 Encerrar</button>
+  <div class="screen-bar turma-topbar">
+    <button class="icon-btn" id="btn-turma-home" aria-label="Voltar ao início"><span data-icon="back"></span></button>
+    <span class="screen-bar-title">Modo Turma</span>
+    <button class="ghost-btn" id="turma-end" hidden><span data-icon="flag"></span>Encerrar</button>
   </div>
 
   <!-- Etapa 1: montar a turma -->
   <div class="turma-view" id="turma-setup">
-    <h2>👥 Modo Turma</h2>
-    <p class="turma-subtitle">Monte os grupos e disputem na roleta!</p>
+    <p class="turma-subtitle">Monte os grupos e disputem na roleta.</p>
 
     <div class="turma-panel">
-      <p class="turma-panel-title">Quantos grupos?</p>
+      <p class="turma-panel-title">Quantos grupos</p>
       <div class="turma-chips" id="turma-count">
         <button type="button" class="turma-chip" data-count="2">2</button>
         <button type="button" class="turma-chip" data-count="3">3</button>
@@ -137,34 +151,38 @@
 
       <p class="turma-panel-title">Tamanho da partida</p>
       <div class="turma-chips" id="turma-length">
-        <button type="button" class="turma-chip" data-length="rapida">⚡ Rápida<small>até 10 perguntas</small></button>
-        <button type="button" class="turma-chip" data-length="media">⏱️ Média<small>até 20 perguntas</small></button>
-        <button type="button" class="turma-chip" data-length="completa">🏆 Completa<small>até 40 perguntas</small></button>
+        <button type="button" class="turma-chip" data-length="rapida">Rápida<small>até 10</small></button>
+        <button type="button" class="turma-chip" data-length="media">Média<small>até 20</small></button>
+        <button type="button" class="turma-chip" data-length="completa">Completa<small>até 40</small></button>
       </div>
 
       <p class="turma-summary" id="turma-summary"></p>
     </div>
 
-    <button type="button" class="turma-cta" id="turma-start">🎲 Começar partida</button>
+    <button type="button" class="btn primary btn-lg btn-block turma-cta" id="turma-start"><span data-icon="play"></span>Começar partida</button>
   </div>
 
   <!-- Etapa 2: partida -->
   <div class="turma-view" id="turma-play" hidden>
-    <div class="turma-progress"><div class="turma-progress-fill" id="turma-progress-fill"></div></div>
+    <div class="turma-roundline">
+      <span class="turma-round" id="turma-round" hidden></span>
+      <div class="turma-progress"><div class="turma-progress-fill" id="turma-progress-fill"></div></div>
+    </div>
+
     <div class="turma-teams" id="turma-teams"></div>
 
     <div class="turma-turn" id="turma-turn">
-      <span class="turma-turn-label">🎯 É a vez de</span>
+      <span class="turma-turn-label">É a vez de</span>
       <span class="turma-turn-name"><span class="turma-dot"></span><span id="turma-turn-name"></span></span>
     </div>
 
     <div class="turma-wheel-stage" id="turma-wheel-stage">
-      <p class="wheel-hint">Gire para sortear o número da pergunta</p>
-      <div class="turma-wheel-wrapper">
+      <p class="wheel-hint">Gire para sortear a pergunta</p>
+      <div class="turma-wheel-wrapper wheel-wrapper">
         <div class="pointer"></div>
         <canvas id="turma-wheel" width="340" height="340"></canvas>
       </div>
-      <button type="button" class="turma-cta" id="turma-spin">🎲 Girar a roleta</button>
+      <button type="button" class="btn primary btn-lg turma-cta" id="turma-spin"><span data-icon="wheel"></span>Girar a roleta</button>
     </div>
 
     <div class="question-card turma-question" id="turma-question" hidden>
@@ -174,61 +192,62 @@
       </div>
       <div class="question-text" id="turma-question-text"></div>
       <div class="alternativas" id="turma-alts"></div>
-      <p class="turma-keys-hint">Dica: dá pra responder com as teclas A, B, C, D e E.</p>
+      <p class="turma-keys-hint"><span data-icon="keyboard"></span>Dá para responder com as teclas A, B, C, D e E</p>
 
       <div class="feedback-panel turma-feedback" id="turma-feedback" aria-live="polite" hidden>
         <div class="feedback-title" id="turma-feedback-title"></div>
         <p class="turma-feedback-answer" id="turma-feedback-answer"></p>
-        <button type="button" class="turma-cta next" id="turma-next"></button>
+        <button type="button" class="btn primary btn-block turma-cta next" id="turma-next"></button>
       </div>
     </div>
   </div>
 
   <!-- Etapa 3: resultado -->
   <div class="turma-view" id="turma-result" hidden>
+    <p class="eyebrow">Resultado</p>
     <h2 class="turma-result-title" id="turma-result-title"></h2>
     <p class="turma-result-sub" id="turma-result-sub"></p>
     <div class="turma-podium" id="turma-podium"></div>
     <div class="turma-ranking" id="turma-ranking"></div>
     <div class="solo-end-controls">
-      <button type="button" class="btn primary" id="turma-again">🔄 Jogar de novo</button>
-      <button type="button" class="btn neutral" id="turma-change-groups">👥 Mudar grupos</button>
-      <button type="button" class="btn neutral" id="turma-result-home">🏠 Início</button>
+      <button type="button" class="btn primary" id="turma-again"><span data-icon="refresh"></span>Jogar de novo</button>
+      <button type="button" class="btn secondary" id="turma-change-groups"><span data-icon="users"></span>Mudar grupos</button>
+      <button type="button" class="btn secondary" id="turma-result-home"><span data-icon="home"></span>Início</button>
     </div>
   </div>
 </section>
 
 <!-- ============================================================
-     TELA: MODO SOLO — JOGO (V2.0)
+     TELA: MODO SOLO — JOGO
      ============================================================ -->
 <section id="screen-solo-game" class="screen">
-  <button class="topbar-btn" id="btn-solo-home-top" style="align-self:flex-start; margin: 10px 0 0 6px;">⬅ Início</button>
+  <div class="screen-bar">
+    <button class="icon-btn" id="btn-solo-home-top" aria-label="Voltar ao início"><span data-icon="back"></span></button>
+    <span class="screen-bar-title">Modo Solo</span>
+    <button class="ghost-btn" id="btn-encerrar-partida"><span data-icon="flag"></span>Encerrar</button>
+  </div>
 
   <div class="hud">
     <div class="hud-chip hud-lives" id="solo-lives">
-      <span class="hud-icon">❤️</span>
+      <span class="hud-label"><span data-icon="heart" class="hud-icon"></span>Vidas</span>
       <span id="solo-lives-text" class="hud-value">3</span>
-      <span class="hud-label">Vidas</span>
     </div>
     <div class="hud-chip hud-combo" id="solo-combo">
-      <span class="hud-icon">🔥</span>
-      <span id="solo-combo-text" class="hud-value combo-flames">—</span>
-      <span class="hud-label">Combo</span>
+      <span class="hud-label"><span data-icon="flame" class="hud-icon"></span>Combo</span>
+      <span id="solo-combo-text" class="hud-value">—</span>
     </div>
     <div class="hud-chip hud-timer timer-wrap" id="solo-timer-wrap">
-      <span class="hud-icon">⏱️</span>
+      <span class="hud-label"><span data-icon="timer" class="hud-icon"></span>Tempo</span>
       <span id="solo-timer-text" class="hud-value">15s</span>
-      <span class="hud-label">Tempo</span>
       <div class="timer-bar-track"><div class="timer-bar-fill" id="solo-timer-fill"></div></div>
     </div>
     <div class="hud-chip hud-score">
-      <span class="hud-icon">⭐</span>
+      <span class="hud-label"><span data-icon="star" class="hud-icon"></span>Pontos</span>
       <span id="solo-score-text" class="hud-value">0</span>
-      <span class="hud-label">Pontos</span>
     </div>
   </div>
 
-  <p class="wheel-hint">Gire para sortear a categoria da próxima pergunta</p>
+  <p class="wheel-hint">Gire para sortear a categoria</p>
 
   <div class="wheel-wrapper">
     <div class="pointer"></div>
@@ -237,25 +256,22 @@
 
   <div class="event-banner" id="solo-event-banner"></div>
 
-  <button class="solo-spin-btn" id="solo-spin-btn">🎲 Girar Roleta de Categorias</button>
+  <button class="btn primary btn-lg solo-spin-btn" id="solo-spin-btn"><span data-icon="wheel"></span>Girar roleta</button>
 
   <div id="solo-question-area"></div>
-
-  <div class="solo-end-controls">
-    <button class="btn danger" id="btn-encerrar-partida">🏁 Encerrar Partida</button>
-  </div>
 </section>
 
 <!-- ============================================================
      TELA: MODO SOLO — RESULTADO
      ============================================================ -->
 <section id="screen-solo-result" class="screen">
-  <h2 id="solo-result-title">🎉 FIM DE JOGO!</h2>
+  <p class="eyebrow">Resultado</p>
+  <h2 id="solo-result-title">Fim de jogo</h2>
   <div class="result-card" id="solo-result-card"></div>
   <div class="solo-end-controls">
-    <button class="btn primary" id="btn-jogar-novamente">🔄 Jogar novamente</button>
-    <button class="btn neutral" id="btn-resultado-home">🏠 Voltar ao início</button>
-    <button class="btn secondary" id="btn-resultado-desempenho">📊 Ver desempenho</button>
+    <button class="btn primary" id="btn-jogar-novamente"><span data-icon="refresh"></span>Jogar novamente</button>
+    <button class="btn secondary" id="btn-resultado-desempenho"><span data-icon="chart"></span>Ver desempenho</button>
+    <button class="btn secondary" id="btn-resultado-home"><span data-icon="home"></span>Início</button>
   </div>
 </section>
 
@@ -263,29 +279,34 @@
      TELA: CONQUISTAS
      ============================================================ -->
 <section id="screen-achievements" class="screen">
-  <h2>🏆 Conquistas</h2>
+  <div class="screen-bar">
+    <button class="icon-btn" id="btn-achievements-home" aria-label="Voltar"><span data-icon="back"></span></button>
+    <span class="screen-bar-title">Conquistas</span>
+    <span class="screen-bar-meta" id="achievements-progress-text">0/8</span>
+  </div>
 
   <div class="achievements-progress">
     <div class="achievements-progress-track">
       <div class="achievements-progress-fill" id="achievements-progress-fill"></div>
     </div>
-    <span id="achievements-progress-text">0/8 desbloqueadas</span>
   </div>
 
   <div class="achievements-grid" id="achievements-grid"></div>
-  <button class="btn neutral" id="btn-achievements-home" style="margin-top:20px;">⬅ Voltar</button>
 </section>
 
 <!-- ============================================================
      TELA: ESTATÍSTICAS
      ============================================================ -->
 <section id="screen-stats" class="screen">
-  <h2>📊 Meu Desempenho</h2>
+  <div class="screen-bar">
+    <button class="icon-btn" id="btn-stats-home" aria-label="Voltar"><span data-icon="back"></span></button>
+    <span class="screen-bar-title">Meu desempenho</span>
+  </div>
 
   <div class="stats-empty" id="stats-empty" style="display:none;">
-    <span class="stats-empty-icon">🎲</span>
+    <span data-icon="chart" class="stats-empty-icon"></span>
     <p>Você ainda não jogou nenhuma partida no Modo Solo.</p>
-    <p class="stats-empty-sub">Jogue uma rodada para ver suas estatísticas aqui!</p>
+    <p class="stats-empty-sub">Jogue uma rodada para ver suas estatísticas aqui.</p>
   </div>
 
   <div class="stats-grid" id="stats-grid"></div>
@@ -293,17 +314,19 @@
     <h3 class="chart-card-title">Aproveitamento por categoria</h3>
     <canvas id="chart-categorias" height="220"></canvas>
   </div>
-  <button class="btn neutral" id="btn-stats-home" style="margin-top:20px;">⬅ Voltar</button>
 </section>
 
 <!-- ============================================================
      TELA: CONFIGURAÇÕES
      ============================================================ -->
 <section id="screen-settings" class="screen">
-  <h2>⚙️ Configurações</h2>
-  <div class="settings-list">
+  <div class="screen-bar">
+    <button class="icon-btn" id="btn-settings-home" aria-label="Voltar"><span data-icon="back"></span></button>
+    <span class="screen-bar-title">Configurações</span>
+  </div>
 
-    <p class="settings-section-title">🔊 Áudio</p>
+  <div class="settings-list">
+    <p class="settings-section-title">Áudio</p>
     <div class="settings-row">
       <div class="settings-row-text">
         <label for="cfg-som">Som</label>
@@ -312,7 +335,7 @@
       <label class="switch"><input type="checkbox" id="cfg-som"><span class="slider"></span></label>
     </div>
 
-    <p class="settings-section-title">🎨 Aparência</p>
+    <p class="settings-section-title">Aparência</p>
     <div class="settings-row">
       <div class="settings-row-text">
         <label for="cfg-tema">Tema escuro</label>
@@ -323,12 +346,12 @@
     <div class="settings-row">
       <div class="settings-row-text">
         <label for="cfg-animacoes">Animações</label>
-        <span class="settings-row-desc">Transições, brilhos e efeitos visuais</span>
+        <span class="settings-row-desc">Transições e efeitos visuais</span>
       </div>
       <label class="switch"><input type="checkbox" id="cfg-animacoes"><span class="slider"></span></label>
     </div>
 
-    <p class="settings-section-title">🎮 Partida (Modo Solo)</p>
+    <p class="settings-section-title">Partida — Modo Solo</p>
     <div class="settings-row">
       <div class="settings-row-text">
         <label for="cfg-dificuldade">Dificuldade</label>
@@ -336,9 +359,9 @@
       </div>
       <select id="cfg-dificuldade" class="settings-select">
         <option value="adaptativa">Adaptativa</option>
-        <option value="facil">🟢 Fácil</option>
-        <option value="medio">🟡 Médio</option>
-        <option value="dificil">🔴 Difícil</option>
+        <option value="facil">Fácil</option>
+        <option value="medio">Médio</option>
+        <option value="dificil">Difícil</option>
       </select>
     </div>
     <div class="settings-row">
@@ -356,29 +379,29 @@
       <label class="switch"><input type="checkbox" id="cfg-vidas"><span class="slider"></span></label>
     </div>
 
-    <p class="settings-section-title">🗑️ Dados</p>
+    <p class="settings-section-title">Dados</p>
     <div class="settings-row danger-row">
       <div class="settings-row-text">
         <label>Restaurar progresso</label>
         <span class="settings-row-desc">Apaga estatísticas e conquistas salvas neste navegador</span>
       </div>
-      <button class="btn danger" id="btn-restaurar-progresso" style="padding:8px 14px; font-size:14px;">Apagar</button>
+      <button class="btn danger btn-sm" id="btn-restaurar-progresso">Apagar</button>
     </div>
   </div>
-  <button class="btn neutral" id="btn-settings-home" style="margin-top:20px;">⬅ Voltar</button>
 </section>
 
-<div class="achievement-toast" id="achievement-toast"></div>
+<div class="achievement-toast" id="achievement-toast" role="status"></div>
 
+<script src="js/icons.js" defer></script>
 <script src="js/questions.js" defer></script>
 <script src="js/storage.js" defer></script>
 <script src="js/audio.js" defer></script>
 <script src="js/achievements.js" defer></script>
+<script src="js/wheel.js" defer></script>
 <script src="js/classic.js" defer></script>
 <!-- async: se a CDN estiver lenta/bloqueada (ex.: rede da escola), o resto
      do jogo não fica esperando por ela; só o gráfico de desempenho depende. -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" async></script>
-<script src="js/wheel.js" defer></script>
 <script src="js/game.js" defer></script>
 <script src="js/stats.js" defer></script>
 <script src="js/app.js" defer></script>

@@ -4,49 +4,49 @@
 const ACHIEVEMENTS = [
   {
     id: "primeiro_acerto",
-    emoji: "🏅",
+    icone: "check",
     nome: "Primeiro Acerto",
     descricao: "Acerte sua primeira pergunta.",
     condicao: ctx => ctx.stats.acertos >= 1
   },
   {
     id: "combo_5",
-    emoji: "🔥",
+    icone: "flame",
     nome: "5 Acertos Seguidos",
     descricao: "Alcance um combo de 5 acertos seguidos.",
     condicao: ctx => ctx.comboAtual >= 5
   },
   {
     id: "combo_10",
-    emoji: "🔥🔥",
+    icone: "flame",
     nome: "Mestre do Combo",
     descricao: "Alcance um combo de 10 acertos seguidos.",
     condicao: ctx => ctx.comboAtual >= 10
   },
   {
     id: "resposta_relampago",
-    emoji: "⚡",
+    icone: "zap",
     nome: "Resposta Relâmpago",
     descricao: "Acerte uma pergunta em menos de 3 segundos.",
     condicao: ctx => ctx.acertouUltima && typeof ctx.tempoRespostaSeg === "number" && ctx.tempoRespostaSeg < 3
   },
   {
     id: "dez_acertos",
-    emoji: "🎯",
+    icone: "target",
     nome: "10 Acertos",
     descricao: "Acumule 10 respostas certas.",
     condicao: ctx => ctx.stats.acertos >= 10
   },
   {
     id: "mestre_do_saber",
-    emoji: "👑",
+    icone: "crown",
     nome: "Mestre do Saber",
     descricao: "Marque 2.000 pontos ou mais em uma única partida.",
     condicao: ctx => (ctx.pontuacaoPartida || 0) >= 2000
   },
   {
     id: "aproveitamento_perfeito",
-    emoji: "💯",
+    icone: "percent",
     nome: "100% de Aproveitamento",
     descricao: "Termine uma partida com pelo menos 5 perguntas e 0 erros.",
     condicao: ctx =>
@@ -56,7 +56,7 @@ const ACHIEVEMENTS = [
   },
   {
     id: "cinquenta_questoes",
-    emoji: "📚",
+    icone: "book",
     nome: "50 Questões Respondidas",
     descricao: "Responda 50 perguntas no total.",
     condicao: ctx => ctx.stats.perguntasRespondidas >= 50

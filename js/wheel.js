@@ -1,11 +1,98 @@
-// Roleta de categorias da V2.0 (Modo Solo).
-// Reaproveita a mesma técnica do Modo Turma (ponteiro fixo no topo + cálculo
-// do segmento sorteado), mas desenhando as 7 categorias em vez de números de
-// pergunta, e com uma curva de easing que acelera e desacelera (mais realista).
+// Desenho das roletas (Modo Solo e Modo Turma) na identidade RB: fatias em
+// tons neutros alternados, rótulos em fonte mono e miolo em forma de "nó de
+// circuito". As cores vêm das variáveis CSS do tema (--wheel-*).
 
+const WheelPaint = (() => {
+  const MONO = "'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace";
+
+  function cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  // size = tamanho lógico (px CSS); o canvas é redimensionado para a
+  // densidade da tela para o texto não ficar borrado.
+  function draw(canvas, size, labels, { fontSize = 12 } = {}) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (canvas.width !== size * dpr) {
+      canvas.width = size * dpr;
+      canvas.height = size * dpr;
+    }
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, size, size);
+
+    const n = labels.length;
+    if (!n) return;
+
+    const segs = [cssVar("--wheel-seg-1"), cssVar("--wheel-seg-2"), cssVar("--wheel-seg-3")];
+    const line = cssVar("--wheel-line");
+    const text = cssVar("--wheel-text");
+    const ring = cssVar("--wheel-ring");
+    const hub = cssVar("--wheel-hub");
+
+    const c = size / 2;
+    const radius = c - 2;
+    const step = (2 * Math.PI) / n;
+
+    for (let i = 0; i < n; i++) {
+      // Alterna dois tons; com número ímpar de fatias a última usa um terceiro
+      // tom para não ficar igual à primeira (vizinhas).
+      const fill = n > 1 && n % 2 === 1 && i === n - 1 ? segs[2] : segs[i % 2];
+      const start = i * step;
+      ctx.beginPath();
+      ctx.moveTo(c, c);
+      ctx.arc(c, c, radius, start, start + step);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+      if (n > 1) {
+        ctx.strokeStyle = line;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      ctx.save();
+      ctx.translate(c, c);
+      ctx.rotate(start + step / 2);
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.font = `600 ${fontSize}px ${MONO}`;
+      ctx.fillStyle = text;
+      ctx.fillText(String(labels[i]), radius - 14, 0);
+      ctx.restore();
+    }
+
+    ctx.beginPath();
+    ctx.arc(c, c, radius, 0, 2 * Math.PI);
+    ctx.strokeStyle = ring;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(c, c, 20, 0, 2 * Math.PI);
+    ctx.fillStyle = hub;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(c, c, 6, 0, 2 * Math.PI);
+    ctx.fillStyle = segs[0];
+    ctx.fill();
+  }
+
+  // Redesenha quando a fonte mono terminar de carregar (o canvas não espera).
+  function whenFontReady(callback) {
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load(`600 12px ${MONO}`).then(callback, () => {});
+    }
+  }
+
+  return { draw, whenFontReady };
+})();
+
+// Roleta de categorias do Modo Solo. Ponteiro fixo no topo + cálculo do
+// segmento sorteado (mesma técnica do Modo Turma).
 const CategoryWheel = (() => {
+  const SIZE = 320;
   let canvas = null;
-  let ctx = null;
   let angle = 0;
   let rotation = 0;
   let spinning = false;
@@ -14,38 +101,13 @@ const CategoryWheel = (() => {
   function init(canvasId) {
     canvas = document.getElementById(canvasId);
     if (!canvas) return;
-    ctx = canvas.getContext("2d");
     draw();
+    WheelPaint.whenFontReady(draw);
   }
 
   function draw() {
-    if (!ctx) return;
-    const n = categorias.length;
-    const angleStep = (2 * Math.PI) / n;
-    const r = canvas.width / 2;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    for (let i = 0; i < n; i++) {
-      const startAngle = i * angleStep;
-      const endAngle = startAngle + angleStep;
-
-      ctx.fillStyle = categorias[i].cor;
-      ctx.beginPath();
-      ctx.moveTo(r, r);
-      ctx.arc(r, r, r, startAngle, endAngle);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.save();
-      ctx.translate(r, r);
-      ctx.rotate(startAngle + angleStep / 2);
-      ctx.textAlign = "right";
-      ctx.fillStyle = "#fff";
-      ctx.font = `bold ${Math.round(r * 0.14)}px Arial`;
-      ctx.fillText(categorias[i].emoji, r - 16, 8);
-      ctx.restore();
-    }
+    if (!canvas) return;
+    WheelPaint.draw(canvas, SIZE, categorias.map(c => c.rotulo), { fontSize: 11 });
   }
 
   function spin(onDone) {
@@ -69,8 +131,7 @@ const CategoryWheel = (() => {
     setTimeout(() => {
       angle = finalAngle % 360;
       const anglePerSegment = 360 / n;
-      // Ponteiro fixo no topo (270° no sistema de ângulos do canvas) — mesmo
-      // raciocínio usado no Modo Turma para descobrir a fatia sob o ponteiro.
+      // Ponteiro fixo no topo (270° no sistema de ângulos do canvas).
       const pointerAngle = ((270 - angle) % 360 + 360) % 360;
       const selectedIndex = Math.floor(pointerAngle / anglePerSegment) % n;
 
@@ -78,6 +139,8 @@ const CategoryWheel = (() => {
       if (typeof onDone === "function") onDone(categorias[selectedIndex], selectedIndex);
     }, duracao * 1000);
   }
+
+  document.addEventListener("rb:themechange", draw);
 
   return {
     init,
