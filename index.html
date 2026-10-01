@@ -207,7 +207,7 @@
   <div class="hud">
     <div class="hud-chip hud-lives" id="solo-lives">
       <span class="hud-icon">❤️</span>
-      <span id="solo-lives-text" class="hud-value">❤️❤️❤️</span>
+      <span id="solo-lives-text" class="hud-value">3</span>
       <span class="hud-label">Vidas</span>
     </div>
     <div class="hud-chip hud-combo" id="solo-combo">
@@ -375,7 +375,9 @@
 <script src="js/audio.js" defer></script>
 <script src="js/achievements.js" defer></script>
 <script src="js/classic.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+<!-- async: se a CDN estiver lenta/bloqueada (ex.: rede da escola), o resto
+     do jogo não fica esperando por ela; só o gráfico de desempenho depende. -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" async></script>
 <script src="js/wheel.js" defer></script>
 <script src="js/game.js" defer></script>
 <script src="js/stats.js" defer></script>

@@ -392,7 +392,7 @@ Que efeito de sentido percebe-se no trecho “... ficavam simplesmente bebendo e
     alternativas: [
       "Descrição do comportamento das pessoas.",
       "Convite para as pessoas se ajuntarem.",
-      "Ordem expressão por imperativos.",
+      "Ordem expressa por imperativos.",
       "Mistura de sentidos: paladar e audição.",
       "Descrição do ambiente físico."
     ],

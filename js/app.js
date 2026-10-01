@@ -152,7 +152,7 @@ const App = (() => {
     );
     document.getElementById("btn-solo-home-top").addEventListener("click", () => {
       if (confirm("Sair da partida atual? O progresso desta rodada será perdido.")) {
-        SoloGame.stopClock();
+        SoloGame.abandon();
         showScreen("screen-home");
       }
     });
