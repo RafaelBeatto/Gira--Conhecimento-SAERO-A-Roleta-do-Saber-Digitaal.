@@ -446,7 +446,7 @@ Um aspecto comum a esses dois textos é:`,
     "D) exagero",
     "E) oposição de sentimento"
   ],
-  resposta: "D"
+  resposta: "E"
 },
 
 {
