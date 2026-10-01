@@ -528,6 +528,7 @@ const SoloGame = (() => {
   return {
     start,
     endGame,
-    abandon
+    abandon,
+    isActive: () => partidaAtiva
   };
 })();
