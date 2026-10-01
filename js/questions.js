@@ -492,8 +492,8 @@ Um aspecto comum a esses dois textos é:`,
       "exagero",
       "oposição de sentimento"
     ],
-    resposta: 3,
-    explicacao: "'Glória' e 'agonia' são expressões exageradas para descrever a alegria e a decepção causadas pelo bilhete."
+    resposta: 4,
+    explicacao: "'Glória' (alegria quando a namorada respondia) e 'agonia' (aflição quando o bilhete enganchava) expressam sentimentos opostos."
   },
   {
     categoria: "Português",
