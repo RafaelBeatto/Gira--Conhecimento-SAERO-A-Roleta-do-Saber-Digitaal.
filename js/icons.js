@@ -2,6 +2,15 @@
 // Elementos estáticos usam <span data-icon="nome"></span>, trocados pelo SVG
 // no carregamento; o JS usa Icons.svg("nome").
 
+// replaceChildren só existe a partir do Safari 14 / Chrome 86; o Modo Turma
+// depende dele, então tablets e celulares mais antigos ganham esta versão.
+if (!Element.prototype.replaceChildren) {
+  Element.prototype.replaceChildren = function (...nodes) {
+    this.textContent = "";
+    this.append(...nodes);
+  };
+}
+
 const Icons = (() => {
   const PATHS = {
     home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M10 21v-6h4v6"/>',

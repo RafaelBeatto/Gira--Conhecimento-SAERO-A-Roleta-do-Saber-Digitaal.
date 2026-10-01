@@ -10,7 +10,7 @@ const SoloGame = (() => {
     { id: "dobro", icone: "star", nome: "Dobro de pontos" },
     { id: "relampago", icone: "zap", nome: "Resposta relâmpago" },
     { id: "vida", icone: "heart", nome: "Vida extra" },
-    { id: "dica", icone: "bulb", nome: "Dica grátis" },
+    { id: "dica", icone: "bulb", nome: "Dica sem custo" },
     { id: "combo2", icone: "flame", nome: "Combo x2" }
   ];
   const DIFICULDADE_LABEL = { facil: "Fácil", medio: "Médio", dificil: "Difícil" };
