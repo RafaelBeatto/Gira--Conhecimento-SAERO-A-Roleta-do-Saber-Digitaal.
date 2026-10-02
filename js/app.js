@@ -13,12 +13,22 @@ const App = (() => {
     "screen-settings"
   ];
 
-  // Telas de jogo marcam "Jogar" como item ativo no menu.
+  // O jogo começa pela tela inicial, então suas telas marcam "Início" no menu.
   const NAV_PARENT = {
-    "screen-solo-game": "screen-mode-select",
-    "screen-solo-result": "screen-mode-select",
-    "screen-turma": "screen-mode-select"
+    "screen-mode-select": "screen-home",
+    "screen-solo-game": "screen-home",
+    "screen-solo-result": "screen-home",
+    "screen-turma": "screen-home"
   };
+  const NAV_COLLAPSED_KEY = "gira_nav_collapsed";
+
+  // Efeito de clique em algo que já está aberto (não troca de tela).
+  function pressFeedback(el) {
+    el.classList.remove("is-pressed");
+    void el.offsetWidth;
+    el.classList.add("is-pressed");
+    el.addEventListener("animationend", () => el.classList.remove("is-pressed"), { once: true });
+  }
 
   function showScreen(id) {
     SCREENS.forEach(s => {
@@ -78,8 +88,36 @@ const App = (() => {
     else root.removeAttribute("data-theme"); // segue o tema do sistema
 
     document.body.classList.toggle("reduce-motion", settings.animacoesOn === false);
+    updateThemeControls();
     // As roletas são desenhadas em canvas com cores do tema: avisa para redesenhar.
     document.dispatchEvent(new Event("rb:themechange"));
+  }
+
+  function isDarkActive() {
+    const forced = document.documentElement.getAttribute("data-theme");
+    if (forced) return forced === "dark";
+    return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  }
+
+  // Botão rápido do menu (alterna claro/escuro) e escolha em Configurações.
+  function updateThemeControls() {
+    const dark = isDarkActive();
+    const btn = document.getElementById("nav-theme");
+    const label = dark ? "Modo claro" : "Modo escuro";
+    btn.innerHTML = Icons.svg(dark ? "sun" : "moon") + `<span class="nav-label">${label}</span>`;
+    btn.setAttribute("aria-label", label);
+    if (document.body.classList.contains("nav-collapsed")) btn.title = label;
+
+    const pref = Storage.getSettings().temaEscuro;
+    const current = pref === true ? "escuro" : pref === false ? "claro" : "auto";
+    document.querySelectorAll("#cfg-tema [data-tema]").forEach(b => {
+      b.setAttribute("aria-pressed", String(b.dataset.tema === current));
+    });
+  }
+
+  function setThemePreference(temaEscuro) {
+    Storage.saveSettings({ temaEscuro });
+    applyTheme();
   }
 
   function renderAchievementsScreen() {
@@ -125,7 +163,6 @@ const App = (() => {
   function loadSettingsIntoForm() {
     const s = Storage.getSettings();
     document.getElementById("cfg-som").checked = !!s.somOn;
-    document.getElementById("cfg-tema").checked = s.temaEscuro === true;
     document.getElementById("cfg-dificuldade").value = s.dificuldade;
     document.getElementById("cfg-cronometro").checked = !!s.cronometroOn;
     document.getElementById("cfg-vidas").checked = !!s.vidasOn;
@@ -138,10 +175,12 @@ const App = (() => {
       Storage.saveSettings({ somOn: e.target.checked });
       GameAudio.setEnabled(e.target.checked);
     });
-    document.getElementById("cfg-tema").addEventListener("change", e => {
-      Storage.saveSettings({ temaEscuro: e.target.checked });
-      applyTheme();
-    });
+    document.querySelectorAll("#cfg-tema [data-tema]").forEach(b =>
+      b.addEventListener("click", () => {
+        const map = { auto: null, claro: false, escuro: true };
+        setThemePreference(map[b.dataset.tema]);
+      })
+    );
     document.getElementById("cfg-dificuldade").addEventListener("change", e => {
       Storage.saveSettings({ dificuldade: e.target.value });
     });
@@ -224,13 +263,51 @@ const App = (() => {
       }
     });
 
-    document.getElementById("nav-brand").addEventListener("click", () => goTo("screen-home"));
-    nav.querySelectorAll(".nav-item").forEach(item =>
+    const brand = document.getElementById("nav-brand");
+    brand.addEventListener("click", () => {
+      if (currentScreen() === "screen-home") pressFeedback(brand);
+      else goTo("screen-home");
+    });
+
+    nav.querySelectorAll(".nav-item[data-nav]").forEach(item =>
       item.addEventListener("click", () => {
+        // Já está nessa tela: só o efeito de clique, sem trocar nem fechar.
+        if (currentScreen() === item.dataset.nav) {
+          pressFeedback(item);
+          return;
+        }
         setOpen(false);
         goTo(item.dataset.nav);
       })
     );
+
+    document.getElementById("nav-theme").addEventListener("click", () => setThemePreference(!isDarkActive()));
+
+    // Recolher (só no computador): fica lembrado no navegador.
+    const collapseBtn = document.getElementById("nav-collapse");
+    function setCollapsed(collapsed) {
+      document.body.classList.toggle("nav-collapsed", collapsed);
+      const label = collapsed ? "Expandir menu" : "Recolher menu";
+      collapseBtn.setAttribute("aria-label", label);
+      collapseBtn.setAttribute("aria-expanded", String(!collapsed));
+      collapseBtn.querySelector(".nav-label").textContent = label;
+      // No modo recolhido o nome some: a dica do mouse mostra para onde vai.
+      nav.querySelectorAll(".nav-item").forEach(item => {
+        if (collapsed) item.title = item.getAttribute("aria-label");
+        else item.removeAttribute("title");
+      });
+      try {
+        localStorage.setItem(NAV_COLLAPSED_KEY, collapsed ? "1" : "0");
+      } catch {}
+    }
+    collapseBtn.addEventListener("click", () => setCollapsed(!document.body.classList.contains("nav-collapsed")));
+    let saved = false;
+    try {
+      saved = localStorage.getItem(NAV_COLLAPSED_KEY) === "1";
+    } catch {}
+    document.body.classList.add("nav-instant");
+    setCollapsed(saved);
+    requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.remove("nav-instant")));
   }
 
   function registerServiceWorker() {

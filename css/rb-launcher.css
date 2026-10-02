@@ -31,8 +31,12 @@
   color: inherit; text-align: center; text-decoration: none;
   transition: background var(--rb-transition, 160ms ease), border-color var(--rb-transition, 160ms ease), transform var(--rb-transition, 160ms ease);
 }
-a.rb-launcher__item:hover { background: var(--rb-surface-2, #181818); border-color: var(--rb-border, #252525); transform: translateY(-1px); }
-a.rb-launcher__item:focus-visible { outline: 2px solid var(--rb-blue, #3B82F6); outline-offset: 0; }
+button.rb-launcher__item { width: 100%; background: transparent; font: inherit; cursor: pointer; }
+a.rb-launcher__item:hover, button.rb-launcher__item:hover { background: var(--rb-surface-2, #181818); border-color: var(--rb-border, #252525); }
+a.rb-launcher__item:hover { transform: translateY(-1px); }
+a.rb-launcher__item:focus-visible, button.rb-launcher__item:focus-visible { outline: 2px solid var(--rb-blue, #3B82F6); outline-offset: 0; }
+/* App atual: clicar só dá um "toque" visual, sem abrir outra página. */
+.rb-launcher__item.is-pressed { animation: rb-launcher-press 320ms ease; }
 .rb-launcher__item.is-current { border-color: var(--rb-border, #252525); }
 .rb-launcher__item.is-disabled { opacity: .45; cursor: not-allowed; }
 .rb-launcher__icon {
@@ -48,6 +52,7 @@ a.rb-launcher__item:hover .rb-launcher__icon, .rb-launcher__item.is-current .rb-
 .rb-launcher__empty { margin: 4px; color: var(--rb-muted, #888); font-size: 13px; }
 
 @keyframes rb-launcher-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@keyframes rb-launcher-press { 0% { transform: scale(1); } 35% { transform: scale(.94); background: var(--rb-surface-2, #181818); } 100% { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .rb-launcher__panel { animation: none; } .rb-launcher__item { transition: none; } }
 @media (max-width: 300px) {
   .rb-launcher__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

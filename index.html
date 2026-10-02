@@ -36,20 +36,26 @@
     <div class="rb-launcher" data-rb-launcher data-current-app="gira-conhecimento"><button class="rb-launcher__button" type="button" aria-label="Abrir aplicativos RB"><span class="rb-mark rb-mark-nav" aria-hidden="true"></span></button></div>
     <button class="icon-btn app-nav-close" id="nav-close" aria-label="Fechar menu"><span data-icon="x"></span></button>
   </div>
-  <p class="app-nav-title">Gira Conhecimento</p>
-  <p class="app-nav-sub">A roleta do saber digital</p>
+  <div class="app-nav-brandtext">
+    <p class="app-nav-title">Gira Conhecimento</p>
+    <p class="app-nav-sub">A roleta do saber digital</p>
+  </div>
 
   <div class="app-nav-items">
-    <button class="nav-item" data-nav="screen-home"><span data-icon="home"></span>Início</button>
-    <button class="nav-item" data-nav="screen-mode-select"><span data-icon="play"></span>Jogar</button>
-    <button class="nav-item" data-nav="screen-stats"><span data-icon="chart"></span>Meu desempenho</button>
-    <button class="nav-item" data-nav="screen-achievements"><span data-icon="trophy"></span>Conquistas</button>
-    <button class="nav-item" data-nav="screen-settings"><span data-icon="sliders"></span>Configurações</button>
+    <button class="nav-item" data-nav="screen-home" aria-label="Início"><span data-icon="home"></span><span class="nav-label">Início</span></button>
+    <button class="nav-item" data-nav="screen-stats" aria-label="Meu desempenho"><span data-icon="chart"></span><span class="nav-label">Meu desempenho</span></button>
+    <button class="nav-item" data-nav="screen-achievements" aria-label="Conquistas"><span data-icon="trophy"></span><span class="nav-label">Conquistas</span></button>
+    <button class="nav-item" data-nav="screen-settings" aria-label="Configurações"><span data-icon="sliders"></span><span class="nav-label">Configurações</span></button>
+  </div>
+
+  <div class="app-nav-tools">
+    <button class="nav-item" id="nav-theme" type="button"></button>
+    <button class="nav-item nav-collapse" id="nav-collapse" type="button" aria-controls="app-nav" aria-expanded="true" aria-label="Recolher menu"><span data-icon="sidebar"></span><span class="nav-label">Recolher menu</span></button>
   </div>
 
   <div class="app-nav-footer">
     <span class="rb-mark rb-mark-sm" aria-hidden="true"></span>
-    <span>Rafael Beatto</span>
+    <span class="nav-label">Rafael Beatto</span>
   </div>
 </nav>
 <div class="app-nav-backdrop" id="nav-backdrop" hidden></div>
@@ -368,12 +374,16 @@
     </div>
 
     <p class="settings-section-title">Aparência</p>
-    <div class="settings-row">
+    <div class="settings-row settings-row-stack">
       <div class="settings-row-text">
-        <label for="cfg-tema">Tema escuro</label>
-        <span class="settings-row-desc">Alterna entre tema claro e escuro</span>
+        <span class="settings-label" id="cfg-tema-label">Tema</span>
+        <span class="settings-row-desc">Automático segue o tema do aparelho</span>
       </div>
-      <label class="switch"><input type="checkbox" id="cfg-tema"><span class="slider"></span></label>
+      <div class="segmented" id="cfg-tema" role="group" aria-labelledby="cfg-tema-label">
+        <button type="button" data-tema="auto" aria-pressed="false"><span data-icon="monitor"></span>Automático</button>
+        <button type="button" data-tema="claro" aria-pressed="false"><span data-icon="sun"></span>Claro</button>
+        <button type="button" data-tema="escuro" aria-pressed="false"><span data-icon="moon"></span>Escuro</button>
+      </div>
     </div>
     <div class="settings-row">
       <div class="settings-row-text">

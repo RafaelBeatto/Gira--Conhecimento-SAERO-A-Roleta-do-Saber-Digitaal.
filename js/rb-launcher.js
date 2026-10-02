@@ -9,7 +9,8 @@
 //   <script src="js/rb-launcher.js"></script>
 //
 // A lista de aplicativos vem de window.RB_APPS (js/rb-apps.js).
-// Cada aplicativo abre em NOVA ABA; a aba atual não muda.
+// Cada aplicativo abre em NOVA ABA; a aba atual não muda. O aplicativo em que
+// a pessoa já está não abre nada: só mostra um efeito de clique.
 (() => {
   const ICONS = {
     calculator: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/>',
@@ -38,6 +39,7 @@
       : ready ? "" : '<span class="rb-launcher__note">Link pendente</span>';
     const inner = `<span class="rb-launcher__icon">${iconHtml(app.icon)}</span><span class="rb-launcher__name">${label}</span>${note}`;
     const title = escapeHtml(app.description || app.name);
+    if (current) return `<li><button type="button" class="rb-launcher__item is-current" title="${title}" aria-current="page">${inner}</button></li>`;
     if (!ready) return `<li><span class="rb-launcher__item is-disabled" title="${title}" aria-disabled="true">${inner}</span></li>`;
     return `<li><a class="rb-launcher__item${current ? " is-current" : ""}" href="${escapeHtml(app.url)}" target="_blank" rel="noopener noreferrer" title="${title}"${current ? ' aria-current="page"' : ""}>${inner}</a></li>`;
   }
@@ -85,7 +87,7 @@
       panel.hidden = false;
       button.setAttribute("aria-expanded", "true");
       root.classList.add("is-open");
-      const first = panel.querySelector("a.rb-launcher__item");
+      const first = panel.querySelector("a.rb-launcher__item, button.rb-launcher__item");
       if (first) first.focus({ preventScroll: true });
     }
     function close(returnFocus) {
@@ -102,7 +104,16 @@
     window.addEventListener("scroll", () => { if (isOpen()) place(); }, true);
     document.addEventListener("keydown", (event) => { if (event.key === "Escape" && isOpen()) close(true); });
     // Fecha ao escolher um app (ele abre em nova aba; esta aba continua como está).
-    panel.addEventListener("click", (event) => { if (event.target.closest("a.rb-launcher__item")) close(false); });
+    panel.addEventListener("click", (event) => {
+      if (event.target.closest("a.rb-launcher__item")) close(false);
+      const here = event.target.closest("button.rb-launcher__item.is-current");
+      if (here) {
+        here.classList.remove("is-pressed");
+        void here.offsetWidth;
+        here.classList.add("is-pressed");
+      }
+    });
+    panel.addEventListener("animationend", (event) => event.target.classList.remove("is-pressed"));
     // Fecha se o foco sair do componente (ex.: Tab para fora).
     root.addEventListener("focusout", (event) => { if (event.relatedTarget && !root.contains(event.relatedTarget)) close(false); });
 

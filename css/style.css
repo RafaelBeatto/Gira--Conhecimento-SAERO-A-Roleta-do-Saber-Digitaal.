@@ -507,9 +507,32 @@ button { cursor: pointer; }
   background: var(--rb-blue);
 }
 
-.app-nav-footer {
+.nav-item .icon { flex: none; }
+.nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Tema e recolher ficam no fim do menu, acima da assinatura. */
+.app-nav-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   margin-top: auto;
-  padding-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rb-border);
+}
+
+.nav-collapse { display: none; }
+
+/* Efeito de clique quando a opção já é a tela atual (não troca de página). */
+.is-pressed { animation: rbPress 320ms ease; }
+@keyframes rbPress {
+  0% { transform: scale(1); }
+  35% { transform: scale(0.96); background-color: var(--rb-surface-2); }
+  100% { transform: scale(1); }
+}
+
+.app-nav-footer {
+  margin-top: 12px;
+  padding-top: 12px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -551,6 +574,23 @@ button { cursor: pointer; }
   }
 
   .screen { padding-top: 12px; }
+
+  .nav-collapse { display: flex; }
+
+  body,
+  .app-nav { transition: padding-left 200ms ease, width 200ms ease; }
+  body.nav-instant,
+  body.nav-instant .app-nav { transition: none; }
+
+  /* Menu recolhido: só ícones; o logo continua visível, o nome some. */
+  body.nav-collapsed { padding-left: 92px; }
+  body.nav-collapsed .app-nav { width: 76px; padding: 24px 12px; }
+  body.nav-collapsed .app-nav-head { justify-content: center; }
+  body.nav-collapsed .rb-mark-nav { width: 44px; height: 21px; }
+  body.nav-collapsed .app-nav-brandtext,
+  body.nav-collapsed .nav-label { display: none; }
+  body.nav-collapsed .nav-item { justify-content: center; padding: 0; }
+  body.nav-collapsed .app-nav-footer { display: none; }
 }
 
 /* ==========================================================================
@@ -1327,7 +1367,43 @@ button { cursor: pointer; }
 .settings-section-title + .settings-row:last-child { border-radius: var(--rb-radius-md); }
 
 .settings-row-text { display: flex; flex-direction: column; min-width: 0; }
-.settings-row-text label { font-size: 15px; font-weight: 500; }
+.settings-row-text label,
+.settings-label { font-size: 15px; font-weight: 500; }
+
+/* Linha de configuração com controle largo (ex.: tema): empilha no celular. */
+.settings-row-stack { flex-wrap: wrap; }
+.settings-row-stack .settings-row-text { flex: 1 1 220px; }
+
+.segmented {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  border: 1px solid var(--rb-border-strong);
+  border-radius: 8px;
+  overflow: hidden;
+  flex: 1 1 260px;
+  max-width: 360px;
+}
+
+.segmented button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 8px;
+  border: 0;
+  background: var(--rb-bg);
+  color: var(--rb-text);
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color var(--rb-transition), color var(--rb-transition);
+}
+.segmented button + button { border-left: 1px solid var(--rb-border-strong); }
+.segmented button .icon { width: 16px; height: 16px; }
+.segmented button:hover:not([aria-pressed="true"]) { background: var(--rb-surface-2); }
+.segmented button[aria-pressed="true"] { background: var(--rb-primary); color: var(--rb-on-primary); }
 .settings-row-desc { font-size: 13px; color: var(--rb-muted); }
 .danger-row .settings-row-text label { color: var(--rb-danger); }
 
